@@ -1,0 +1,131 @@
+/**
+ * TMDB API клієнт
+ * Всі запити до themoviedb.org через цей файл
+ * Документація: https://developer.themoviedb.org/docs
+ */
+
+const BASE_URL = 'https://api.themoviedb.org/3'
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p'
+
+// Розміри постерів які надає TMDB
+export const PosterSize = {
+  small: 'w185',
+  medium: 'w342',
+  large: 'w500',
+  original: 'original',
+} as const
+
+// Базові заголовки для кожного запиту
+const headers = {
+  Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+  'Content-Type': 'application/json',
+}
+
+// Типи даних які повертає TMDB
+export interface TMDBMovie {
+  id: number
+  title: string
+  original_title: string
+  overview: string
+  poster_path: string | null
+  backdrop_path: string | null
+  release_date: string
+  vote_average: number
+  vote_count: number
+  genre_ids: number[]
+  popularity: number
+}
+
+export interface TMDBMovieDetails extends TMDBMovie {
+  runtime: number | null
+  genres: Array<{ id: number; name: string }>
+  tagline: string
+}
+
+export interface TMDBReview {
+  id: string
+  author: string
+  content: string
+  created_at: string
+  url: string
+}
+
+export interface TMDBResponse<T> {
+  page: number
+  results: T[]
+  total_pages: number
+  total_results: number
+}
+
+// Отримати постер фільму по шляху з TMDB
+export function getPosterUrl(
+  path: string | null,
+  size: keyof typeof PosterSize = 'medium'
+): string {
+  if (!path) return '/placeholder-poster.png'
+  return `${IMAGE_BASE_URL}/${PosterSize[size]}${path}`
+}
+
+// Пошук фільмів по назві
+export async function searchMovies(
+  query: string,
+  page: number = 1
+): Promise<TMDBResponse<TMDBMovie>> {
+  const params = new URLSearchParams({
+    query,
+    page: String(page),
+    language: 'uk-UA',
+  })
+
+  const res = await fetch(`${BASE_URL}/search/movie?${params}`, { headers })
+
+  if (!res.ok) throw new Error(`TMDB search error: ${res.status}`)
+
+  return res.json() as Promise<TMDBResponse<TMDBMovie>>
+}
+
+// Отримати деталі фільму по ID
+export async function getMovieDetails(
+  movieId: number
+): Promise<TMDBMovieDetails> {
+  const params = new URLSearchParams({ language: 'uk-UA' })
+
+  const res = await fetch(`${BASE_URL}/movie/${movieId}?${params}`, { headers })
+
+  if (!res.ok) throw new Error(`TMDB movie error: ${res.status}`)
+
+  return res.json() as Promise<TMDBMovieDetails>
+}
+
+// Отримати відгуки на фільм
+export async function getMovieReviews(
+  movieId: number,
+  page: number = 1
+): Promise<TMDBResponse<TMDBReview>> {
+  const params = new URLSearchParams({ page: String(page) })
+
+  const res = await fetch(
+    `${BASE_URL}/movie/${movieId}/reviews?${params}`,
+    { headers }
+  )
+
+  if (!res.ok) throw new Error(`TMDB reviews error: ${res.status}`)
+
+  return res.json() as Promise<TMDBResponse<TMDBReview>>
+}
+
+// Отримати популярні фільми
+export async function getPopularMovies(
+  page: number = 1
+): Promise<TMDBResponse<TMDBMovie>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    language: 'uk-UA',
+  })
+
+  const res = await fetch(`${BASE_URL}/movie/popular?${params}`, { headers })
+
+  if (!res.ok) throw new Error(`TMDB popular error: ${res.status}`)
+
+  return res.json() as Promise<TMDBResponse<TMDBMovie>>
+}
