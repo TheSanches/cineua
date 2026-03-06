@@ -13,13 +13,13 @@ export default async function HomePage() {
   if (!user) redirect('/login')
 
   return (
-    <div className="min-h-screen bg-[#08080f] flex items-center justify-center">
+    <div className="min-h-screen bg-bg flex items-center justify-center">
       <div className="text-center">
         <h1 className="text-4xl font-black text-white">
-          Cine<span className="text-[#e8b84b]">UA</span>
+          Cine<span className="text-accent-gold">UA</span>
         </h1>
-        <p className="text-[#8888a0] mt-2">Привіт, {user.email} 👋</p>
-        <p className="text-[#55556a] text-sm mt-1">Головна сторінка — в розробці</p>
+        <p className="text-text-2 mt-2">Привіт, {user.email} 👋</p>
+        <p className="text-text-3 text-sm mt-1">Головна сторінка — в розробці</p>
       </div>
     </div>
   )

@@ -21,14 +21,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#08080f] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
         {/* Логотип */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-black tracking-tight text-white">
-            Cine<span className="text-[#e8b84b]">UA</span>
+            Cine<span className="text-accent-gold">UA</span>
           </h1>
-          <p className="text-[#8888a0] text-sm mt-2">
+          <p className="text-text-2 text-sm mt-2">
             Фільми з українським озвученням
           </p>
         </div>
@@ -36,7 +36,7 @@ export default function LoginPage() {
         {/* Кнопка Google */}
         <button
           onClick={signInWithGoogle}
-          className="w-full flex items-center justify-center gap-3 bg-[#111119] border border-white/10 text-white font-semibold py-4 px-6 rounded-2xl hover:bg-[#18181f] transition-colors"
+          className="w-full flex items-center justify-center gap-3 bg-surface-1 border border-white/10 text-white font-semibold py-4 px-6 rounded-2xl hover:bg-surface-2 transition-colors"
         >
           <GoogleIcon />
           Увійти через Google
