@@ -19,7 +19,12 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: '/', icon: <Home size={22} />, label: 'Головна' },
   { href: '/catalog', icon: <Grid2x2 size={22} />, label: 'Каталог' },
-  { href: '/search', icon: <Search size={22} />, label: 'Пошук', isCenter: true },
+  {
+    href: '/search',
+    icon: <Search size={22} />,
+    label: 'Пошук',
+    isCenter: true,
+  },
   { href: '/watchlist', icon: <Bookmark size={22} />, label: 'Список' },
   { href: '/profile', icon: <User size={22} />, label: 'Профіль' },
 ]

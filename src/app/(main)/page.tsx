@@ -5,10 +5,15 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import PopularMovies from '@/components/home/PopularMovies'
+import { getPopularMovies } from '@/lib/tmdb'
 
 export default async function HomePage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const { results: movies } = await getPopularMovies()
 
   return (
     <div className="min-h-screen">
@@ -31,9 +36,7 @@ export default async function HomePage() {
 
       {/* Привітання */}
       <div className="px-5 pb-5">
-        <h1 className="text-xl font-black text-text-1">
-          Привіт 👋
-        </h1>
+        <h1 className="text-xl font-black text-text-1">Привіт 👋</h1>
         <p className="text-sm text-text-2 mt-1">Що дивимось сьогодні?</p>
       </div>
 
@@ -48,9 +51,7 @@ export default async function HomePage() {
 
       {/* Placeholder для віджетів */}
       <div className="px-5 space-y-4">
-        <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 h-48 flex items-center justify-center">
-          <p className="text-text-3 text-sm">🎬 Продовжити перегляд</p>
-        </div>
+        <PopularMovies movies={movies} />
         <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 h-40 flex items-center justify-center">
           <p className="text-text-3 text-sm">🤖 AI Рекомендації</p>
         </div>

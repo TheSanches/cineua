@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme inline {
   /* Фони */
@@ -12,7 +12,7 @@
   --color-accent-purple: #7c6af7;
 
   /* Український жовтий */
-  --color-ua: #FFD700;
+  --color-ua: #ffd700;
 
   /* Текст */
   --color-text-1: #eeeef5;
