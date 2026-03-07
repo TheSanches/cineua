@@ -20,7 +20,8 @@ export default async function HomePage() {
       {/* Хедер */}
       <header className="flex items-center justify-between px-5 pt-14 pb-3">
         <div className="text-2xl font-black tracking-tight text-text-1">
-          Cine<span className="text-accent-gold">UA</span>
+          <span className="text-accent-blue">Cine</span>
+          <span className="text-accent-gold">UA</span>
         </div>
         <div className="flex gap-2 items-center">
           {/* Сповіщення */}
@@ -36,7 +37,13 @@ export default async function HomePage() {
 
       {/* Привітання */}
       <div className="px-5 pb-5">
-        <h1 className="text-xl font-black text-text-1">Привіт 👋</h1>
+        <h1 className="text-xl font-black text-text-1">
+          <span className="text-accent-blue">Привіт, </span>
+          <span className="text-accent-gold">
+            {user?.user_metadata?.full_name?.split(' ')[0] ?? 'друже'}
+          </span>{' '}
+          👋
+        </h1>
         <p className="text-sm text-text-2 mt-1">Що дивимось сьогодні?</p>
       </div>
 

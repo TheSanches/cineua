@@ -10,6 +10,7 @@
   /* Акценти */
   --color-accent-gold: #e8b84b;
   --color-accent-purple: #7c6af7;
+  --color-accent-blue: #7fafff;
 
   /* Український жовтий */
   --color-ua: #ffd700;
@@ -18,9 +19,14 @@
   --color-text-1: #eeeef5;
   --color-text-2: #8888a0;
   --color-text-3: #55556a;
+  --color-text-4: #44445a;
+  --color-text-5: #333333;
 
   /* Червоний для помилок */
   --color-danger: #f87171;
+
+  /* Тіні */
+  --shadow-gold: 0 4px 20px var(--color-accent-gold);
 
   /* Шрифт */
   --font-sans: system-ui, sans-serif;
