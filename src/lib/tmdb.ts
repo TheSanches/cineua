@@ -104,10 +104,9 @@ export async function getMovieReviews(
 ): Promise<TMDBResponse<TMDBReview>> {
   const params = new URLSearchParams({ page: String(page) })
 
-  const res = await fetch(
-    `${BASE_URL}/movie/${movieId}/reviews?${params}`,
-    { headers }
-  )
+  const res = await fetch(`${BASE_URL}/movie/${movieId}/reviews?${params}`, {
+    headers,
+  })
 
   if (!res.ok) throw new Error(`TMDB reviews error: ${res.status}`)
 
@@ -116,16 +115,24 @@ export async function getMovieReviews(
 
 // Отримати популярні фільми
 export async function getPopularMovies(
-  page: number = 1
+  page = 1
 ): Promise<TMDBResponse<TMDBMovie>> {
-  const params = new URLSearchParams({
-    page: String(page),
-    language: 'uk-UA',
-  })
-
+  const params = new URLSearchParams({ language: 'uk-UA', page: String(page) })
   const res = await fetch(`${BASE_URL}/movie/popular?${params}`, { headers })
-
-  if (!res.ok) throw new Error(`TMDB popular error: ${res.status}`)
-
+  if (!res.ok) throw new Error(`TMDB error: ${res.status}`)
   return res.json() as Promise<TMDBResponse<TMDBMovie>>
+}
+
+export interface TMDBGenre {
+  id: number
+  name: string
+}
+
+// Отримати всі жанри
+export async function getGenres(): Promise<TMDBGenre[]> {
+  const params = new URLSearchParams({ language: 'uk-UA' })
+  const res = await fetch(`${BASE_URL}/genre/movie/list?${params}`, { headers })
+  if (!res.ok) throw new Error(`TMDB genres error: ${res.status}`)
+  const data = (await res.json()) as { genres: TMDBGenre[] }
+  return data.genres
 }

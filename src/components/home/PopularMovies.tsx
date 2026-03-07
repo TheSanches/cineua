@@ -78,7 +78,7 @@ export default function PopularMovies({ movies }: Props) {
                 <p className="text-xs font-semibold text-text-1 line-clamp-2 leading-tight">
                   {movie.title}
                 </p>
-                <p className="text-[10px] text-text-3 mt-1">
+                <p className="text-[11px] text-text-3 mt-1">
                   {movie.release_date?.slice(0, 4)}
                 </p>
               </div>

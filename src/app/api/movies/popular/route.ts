@@ -1,14 +1,11 @@
-/**
- * API роут для отримання популярних фільмів
- * GET /api/movies/popular
- */
-
 import { getPopularMovies } from '@/lib/tmdb'
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const movies = await getPopularMovies()
+    const { searchParams } = new URL(request.url)
+    const page = Number(searchParams.get('page')) || 1
+    const movies = await getPopularMovies(page)
     return NextResponse.json(movies)
   } catch (error) {
     return NextResponse.json(
