@@ -76,11 +76,11 @@ export async function searchMovies(
     page: String(page),
     language: 'uk-UA',
   })
-
-  const res = await fetch(`${BASE_URL}/search/movie?${params}`, { headers })
-
+  const res = await fetch(`${BASE_URL}/search/movie?${params}`, {
+    headers,
+    cache: 'no-store', // завжди свіжий результат
+  })
   if (!res.ok) throw new Error(`TMDB search error: ${res.status}`)
-
   return res.json() as Promise<TMDBResponse<TMDBMovie>>
 }
 
@@ -89,11 +89,11 @@ export async function getMovieDetails(
   movieId: number
 ): Promise<TMDBMovieDetails> {
   const params = new URLSearchParams({ language: 'uk-UA' })
-
-  const res = await fetch(`${BASE_URL}/movie/${movieId}?${params}`, { headers })
-
+  const res = await fetch(`${BASE_URL}/movie/${movieId}?${params}`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
   if (!res.ok) throw new Error(`TMDB movie error: ${res.status}`)
-
   return res.json() as Promise<TMDBMovieDetails>
 }
 
@@ -115,10 +115,16 @@ export async function getMovieReviews(
 
 // Отримати популярні фільми
 export async function getPopularMovies(
-  page = 1
+  page = 1,
+  genreId?: number
 ): Promise<TMDBResponse<TMDBMovie>> {
   const params = new URLSearchParams({ language: 'uk-UA', page: String(page) })
-  const res = await fetch(`${BASE_URL}/movie/popular?${params}`, { headers })
+  if (genreId) params.set('with_genres', String(genreId))
+
+  const res = await fetch(`${BASE_URL}/discover/movie?${params}`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
   if (!res.ok) throw new Error(`TMDB error: ${res.status}`)
   return res.json() as Promise<TMDBResponse<TMDBMovie>>
 }
@@ -131,7 +137,10 @@ export interface TMDBGenre {
 // Отримати всі жанри
 export async function getGenres(): Promise<TMDBGenre[]> {
   const params = new URLSearchParams({ language: 'uk-UA' })
-  const res = await fetch(`${BASE_URL}/genre/movie/list?${params}`, { headers })
+  const res = await fetch(`${BASE_URL}/genre/movie/list?${params}`, {
+    headers,
+    next: { revalidate: 86400 }, // кеш на 24 години — жанри майже не змінюються
+  })
   if (!res.ok) throw new Error(`TMDB genres error: ${res.status}`)
   const data = (await res.json()) as { genres: TMDBGenre[] }
   return data.genres

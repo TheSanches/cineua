@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { TMDBMovie, TMDBGenre, getPosterUrl } from '@/lib/tmdb'
+import { useState, useEffect } from 'react'
 
 interface Props {
   movies: TMDBMovie[] | undefined
@@ -12,6 +12,11 @@ const CatalogGrid: React.FC<Props> = ({ movies, genres }) => {
   const [allMovies, setAllMovies] = useState<TMDBMovie[]>(movies ?? [])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setAllMovies(movies ?? [])
+    setPage(1)
+  }, [movies])
 
   async function loadMore() {
     setLoading(true)
@@ -66,7 +71,6 @@ const CatalogGrid: React.FC<Props> = ({ movies, genres }) => {
         ))}
       </div>
 
-      {/* Кнопка завантажити ще */}
       <div className="flex justify-center pb-6">
         <button
           onClick={loadMore}

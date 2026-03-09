@@ -3,16 +3,48 @@
  * Показує сітку фільмів з фільтрами та пошуком
  */
 
-import { getPopularMovies, getGenres } from '@/lib/tmdb'
-import CatalogFilters from '@/components/catalog/CatalogFilters'
+import { Suspense } from 'react'
+import { getPopularMovies, getGenres, searchMovies } from '@/lib/tmdb'
 import CatalogGrid from '@/components/catalog/CatalogGrid'
+import CatalogFilters from '@/components/catalog/CatalogFilters'
+import Spinner from '@/components/ui/Spinner'
 
-export default async function CatalogPage() {
-  const [{ results: movies }, genres] = await Promise.all([
-    getPopularMovies(),
-    getGenres(),
-  ])
+interface PageProps {
+  searchParams: Promise<{
+    genre?: string
+    sort?: string
+    query?: string
+  }>
+}
 
+async function CatalogContent({ searchParams }: PageProps) {
+  const params = await searchParams
+  const genres = await getGenres()
+
+  // Якщо є пошуковий запит — шукаємо, інакше популярні
+  const { results: movies } = params.query
+    ? await searchMovies(params.query)
+    : await getPopularMovies(1, params.genre ? Number(params.genre) : undefined)
+
+  // Сортування на клієнті
+  const sorted = [...movies].sort((a, b) => {
+    if (params.sort === 'rating') return b.vote_average - a.vote_average
+    if (params.sort === 'date')
+      return b.release_date.localeCompare(a.release_date)
+    return 0
+  })
+
+  // Фільтр по жанру
+  const filtered = params.genre
+    ? sorted.filter((m) => m.genre_ids.includes(Number(params.genre)))
+    : sorted
+
+  // Замість filtered передавай sorted:
+  return <CatalogGrid movies={sorted} genres={genres} />
+}
+
+export default async function CatalogPage({ searchParams }: PageProps) {
+  const genres = await getGenres()
   return (
     <div className="min-h-screen">
       {/* Хедер */}
@@ -21,10 +53,12 @@ export default async function CatalogPage() {
       </header>
 
       {/* Фільтри */}
-      <CatalogFilters />
+      <CatalogFilters genres={genres} />
 
-      {/* Сітка фільмів */}
-      <CatalogGrid movies={movies} genres={genres} />
+      {/* Suspense — показує Spinner поки CatalogContent завантажується */}
+      <Suspense fallback={<Spinner />}>
+        <CatalogContent searchParams={searchParams} />
+      </Suspense>
     </div>
   )
 }
