@@ -8,6 +8,7 @@ import { getMovieDetails, getMovieCredits, getSimilarMovies } from '@/lib/tmdb'
 import BackButton from '@/components/ui/BackButton'
 import MovieCast from '@/components/movie/MovieCast'
 import SimilarMovies from '@/components/movie/SimilarMovies'
+import MovieActions from '@/components/movie/MovieActions'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -125,14 +126,14 @@ export default async function MoviePage({ params }: PageProps) {
         </div>
 
         {/* Дії */}
-        <div className="flex gap-3 mt-5">
-          <button className="flex-1 py-3 bg-accent-gold text-black font-black text-sm rounded-2xl">
-            Де дивитись
-          </button>
-          <button className="w-12 h-12 bg-surface-2 border border-white/7 rounded-2xl flex items-center justify-center">
-            <span className="text-lg">🔖</span>
-          </button>
-        </div>
+        <MovieActions
+          movieId={movie.id}
+          movieTitle={movie.title}
+          posterPath={movie.poster_path}
+          voteAverage={movie.vote_average}
+          releaseDate={movie.release_date}
+          genreIds={movie.genres.map((g) => g.id)}
+        />
       </div>
     </div>
   )

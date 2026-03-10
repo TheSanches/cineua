@@ -31,7 +31,11 @@ export default function PersonMovies({ movies, genres }: Props) {
         {visible.map((movie) => (
           <MovieCard
             key={movie.id}
-            movie={movie}
+            id={movie.id}
+            title={movie.title}
+            poster_path={movie.poster_path}
+            vote_average={movie.vote_average}
+            release_date={movie.release_date}
             genre={genres.find((g) => g.id === movie.genre_ids[0])?.name}
           />
         ))}
