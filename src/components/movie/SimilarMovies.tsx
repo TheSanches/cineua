@@ -1,66 +1,36 @@
 'use client'
 
-import { useState } from 'react'
 import { TMDBMovie, getPosterUrl } from '@/lib/tmdb'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation } from 'swiper/modules'
 import 'swiper/css'
-import 'swiper/css/navigation'
 import Link from 'next/link'
+import { Navigation } from 'swiper/modules'
+import 'swiper/css/navigation'
 import SliderNav from '@/components/ui/SliderNav'
-
-type Filter = 'all' | 'ua'
 
 interface Props {
   movies: TMDBMovie[] | undefined
 }
 
-export default function PopularMovies({ movies }: Props) {
-  const [filter, setFilter] = useState<Filter>('all')
-
+export default function SimilarMovies({ movies }: Props) {
   if (!movies?.length) return null
 
   return (
-    <div className="bg-surface-1 border border-white/7 rounded-2xl overflow-hidden">
-      {/* Заголовок */}
-      <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-        <h2 className="text-base font-bold text-text-1">🎬 Популярні</h2>
-        <div className="flex gap-2">
-          <div
-            onClick={() => setFilter('all')}
-            className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors cursor-pointer ${
-              filter === 'all'
-                ? 'bg-accent-gold text-text-5'
-                : 'text-text-3 hover:text-text-2'
-            }`}
-          >
-            Всі
-          </div>
-          <div
-            onClick={() => setFilter('ua')}
-            className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors cursor-pointer ${
-              filter === 'ua'
-                ? 'bg-ua text-text-5'
-                : 'text-text-3 hover:text-text-2'
-            }`}
-          >
-            🇺🇦 УКР
-          </div>
-        </div>
-      </div>
-      {/* Swiper */}
+    <div className="mt-6">
+      <h2 className="text-base font-black text-text-1 mb-3 px-5">
+        🎭 Схожі фільми
+      </h2>
       <div className="relative">
         <Swiper
           modules={[Navigation]}
-          navigation={{
-            nextEl: '.popular-next',
-            prevEl: '.popular-prev',
-          }}
           slidesPerView="auto"
           spaceBetween={12}
-          slidesOffsetBefore={16}
-          slidesOffsetAfter={16}
-          className="pb-4"
+          slidesOffsetBefore={20}
+          slidesOffsetAfter={20}
+          navigation={{
+            nextEl: '.similar-next',
+            prevEl: '.similar-prev',
+          }}
         >
           {movies.map((movie) => (
             <SwiperSlide key={movie.id} style={{ width: '112px' }}>
@@ -91,8 +61,7 @@ export default function PopularMovies({ movies }: Props) {
             </SwiperSlide>
           ))}
         </Swiper>
-
-        <SliderNav prevClass="popular-prev" nextClass="popular-next" />
+        <SliderNav prevClass="similar-prev" nextClass="similar-next" />
       </div>
     </div>
   )

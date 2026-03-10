@@ -15,6 +15,28 @@ export const PosterSize = {
   original: 'original',
 } as const
 
+export async function getMovieCredits(movieId: number): Promise<TMDBCredits> {
+  const params = new URLSearchParams({ language: 'uk-UA' })
+  const res = await fetch(`${BASE_URL}/movie/${movieId}/credits?${params}`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error(`TMDB credits error: ${res.status}`)
+  return res.json() as Promise<TMDBCredits>
+}
+
+export interface TMDBCast {
+  id: number
+  name: string
+  character: string
+  profile_path: string | null
+  order: number
+}
+
+export interface TMDBCredits {
+  cast: TMDBCast[]
+}
+
 // Базові заголовки для кожного запиту
 const headers = {
   Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
@@ -144,4 +166,17 @@ export async function getGenres(): Promise<TMDBGenre[]> {
   if (!res.ok) throw new Error(`TMDB genres error: ${res.status}`)
   const data = (await res.json()) as { genres: TMDBGenre[] }
   return data.genres
+}
+
+// схожі фільми
+export async function getSimilarMovies(
+  movieId: number
+): Promise<TMDBResponse<TMDBMovie>> {
+  const params = new URLSearchParams({ language: 'uk-UA' })
+  const res = await fetch(`${BASE_URL}/movie/${movieId}/similar?${params}`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error(`TMDB similar error: ${res.status}`)
+  return res.json() as Promise<TMDBResponse<TMDBMovie>>
 }

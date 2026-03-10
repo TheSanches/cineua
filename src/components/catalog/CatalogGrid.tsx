@@ -2,6 +2,7 @@
 
 import { TMDBMovie, TMDBGenre, getPosterUrl } from '@/lib/tmdb'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 interface Props {
   movies: TMDBMovie[] | undefined
@@ -40,7 +41,8 @@ const CatalogGrid: React.FC<Props> = ({ movies, genres }) => {
     <div>
       <div className="grid grid-cols-2 gap-3 p-5">
         {allMovies.map((movie) => (
-          <div
+          <Link
+            href={`/movie/${movie.id}`}
             key={movie.id}
             className="bg-surface-2 rounded-lg overflow-hidden shadow-lg flex flex-col"
           >
@@ -67,7 +69,7 @@ const CatalogGrid: React.FC<Props> = ({ movies, genres }) => {
                 </p>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
