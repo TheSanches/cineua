@@ -7,9 +7,11 @@ import Link from 'next/link'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css/navigation'
 import SliderNav from '@/components/ui/SliderNav'
+import { Clapperboard } from 'lucide-react'
 
 interface Props {
   movies: TMDBMovie[] | undefined
+  title?: string
 }
 
 export default function SimilarMovies({ movies }: Props) {
@@ -17,9 +19,10 @@ export default function SimilarMovies({ movies }: Props) {
 
   return (
     <div className="mt-6">
-      <h2 className="text-base font-black text-text-1 mb-3 px-5">
-        🎭 Схожі фільми
-      </h2>
+      <div className="flex items-center gap-2 mb-3">
+        <Clapperboard size={16} className="text-accent-blue" />
+        <h2 className="text-base font-black text-accent-gold">Схожі фільми</h2>
+      </div>
       <div className="relative">
         <Swiper
           modules={[Navigation]}

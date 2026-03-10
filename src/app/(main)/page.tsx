@@ -47,15 +47,6 @@ export default async function HomePage() {
         <p className="text-sm text-text-2 mt-1">Що дивимось сьогодні?</p>
       </div>
 
-      {/* Пошук */}
-      <div className="mx-5 mb-5 bg-surface-1 border border-white/7 rounded-2xl px-4 py-3 flex items-center gap-3">
-        <span className="text-text-2">🔍</span>
-        <span className="text-text-3 text-sm">Пошук фільмів...</span>
-        <div className="ml-auto bg-gradient-to-r from-accent-purple to-purple-400 text-white text-[10px] font-bold px-2 py-1 rounded-full">
-          AI
-        </div>
-      </div>
-
       {/* Placeholder для віджетів */}
       <div className="px-5 space-y-4">
         <PopularMovies movies={movies} />

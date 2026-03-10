@@ -3,6 +3,8 @@
 import { TMDBCast } from '@/lib/tmdb'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
+import Link from 'next/link'
+import { Users } from 'lucide-react'
 
 interface Props {
   cast: TMDBCast[]
@@ -13,7 +15,10 @@ export default function MovieCast({ cast }: Props) {
 
   return (
     <div className="mt-6">
-      <h2 className="text-base font-black text-text-1 mb-3 px-5">🎭 Актори</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <Users size={18} className="text-accent-blue" />
+        <h2 className="text-base font-black text-accent-gold">Актори</h2>
+      </div>
       <Swiper
         slidesPerView="auto"
         spaceBetween={12}
@@ -22,28 +27,30 @@ export default function MovieCast({ cast }: Props) {
       >
         {cast.map((actor) => (
           <SwiperSlide key={actor.id} style={{ width: '64px' }}>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-surface-2 mb-2 mx-auto">
-                {actor.profile_path ? (
-                  <img
-                    src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
-                    alt={actor.name}
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-2xl">
-                    👤
-                  </div>
-                )}
+            <Link href={`/person/${actor.id}`}>
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-surface-2 mb-2 mx-auto">
+                  {actor.profile_path ? (
+                    <img
+                      src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
+                      alt={actor.name}
+                      className="w-full h-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-2xl">
+                      👤
+                    </div>
+                  )}
+                </div>
+                <p className="text-[10px] font-semibold text-text-1 line-clamp-2 leading-tight">
+                  {actor.name}
+                </p>
+                <p className="text-[10px] text-text-3 mt-0.5 line-clamp-1">
+                  {actor.character}
+                </p>
               </div>
-              <p className="text-[10px] font-semibold text-text-1 line-clamp-2 leading-tight">
-                {actor.name}
-              </p>
-              <p className="text-[10px] text-text-3 mt-0.5 line-clamp-1">
-                {actor.character}
-              </p>
-            </div>
+            </Link>
           </SwiperSlide>
         ))}
       </Swiper>

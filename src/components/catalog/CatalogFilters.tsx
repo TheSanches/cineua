@@ -51,7 +51,7 @@ export default function CatalogFilters({ genres }: Props) {
     <div className="flex flex-col gap-3 pb-3">
       {/* Пошук */}
       <div className="mx-5 bg-surface-1 border border-white/7 rounded-2xl px-4 py-3 flex items-center gap-3">
-        <Search size={16} className="text-text-2 flex-shrink-0" />
+        <Search size={18} className="text-text-2 flex-shrink-0" />
         <input
           type="text"
           placeholder="Пошук фільмів..."

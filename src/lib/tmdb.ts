@@ -180,3 +180,44 @@ export async function getSimilarMovies(
   if (!res.ok) throw new Error(`TMDB similar error: ${res.status}`)
   return res.json() as Promise<TMDBResponse<TMDBMovie>>
 }
+
+export interface TMDBPerson {
+  id: number
+  name: string
+  profile_path: string | null
+  biography: string
+  birthday: string | null
+  place_of_birth: string | null
+  known_for_department: string
+}
+
+export interface TMDBPersonCredits {
+  cast: TMDBMovie[]
+}
+
+// Деталі актора
+export async function getPersonDetails(personId: number): Promise<TMDBPerson> {
+  const params = new URLSearchParams({ language: 'uk-UA' })
+  const res = await fetch(`${BASE_URL}/person/${personId}?${params}`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error(`TMDB person error: ${res.status}`)
+  return res.json() as Promise<TMDBPerson>
+}
+
+// Фільми актора
+export async function getPersonCredits(
+  personId: number
+): Promise<TMDBPersonCredits> {
+  const params = new URLSearchParams({ language: 'uk-UA' })
+  const res = await fetch(
+    `${BASE_URL}/person/${personId}/movie_credits?${params}`,
+    {
+      headers,
+      next: { revalidate: 3600 },
+    }
+  )
+  if (!res.ok) throw new Error(`TMDB person credits error: ${res.status}`)
+  return res.json() as Promise<TMDBPersonCredits>
+}

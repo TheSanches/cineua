@@ -8,6 +8,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import Link from 'next/link'
 import SliderNav from '@/components/ui/SliderNav'
+import { Clapperboard } from 'lucide-react'
 
 type Filter = 'all' | 'ua'
 
@@ -24,7 +25,10 @@ export default function PopularMovies({ movies }: Props) {
     <div className="bg-surface-1 border border-white/7 rounded-2xl overflow-hidden">
       {/* Заголовок */}
       <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-        <h2 className="text-base font-bold text-text-1">🎬 Популярні</h2>
+        <div className="flex items-center gap-2 mb-3">
+          <Clapperboard size={16} className="text-accent-blue" />
+          <h2 className="text-base font-black text-accent-gold">Популярні</h2>
+        </div>
         <div className="flex gap-2">
           <div
             onClick={() => setFilter('all')}
