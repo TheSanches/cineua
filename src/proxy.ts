@@ -39,7 +39,11 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Якщо не залогінений і намагається зайти на захищену сторінку
-  if (!user && !request.nextUrl.pathname.startsWith('/login')) {
+  if (
+    !user &&
+    !request.nextUrl.pathname.startsWith('/login') &&
+    !request.nextUrl.pathname.startsWith('/auth')
+  ) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
