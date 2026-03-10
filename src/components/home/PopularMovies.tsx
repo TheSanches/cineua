@@ -1,16 +1,9 @@
-// відображає популярні фільми у вигляді горизонтального слайдера. Компонент приймає масив фільмів (movies) та дозволяє користувачу фільтрувати їх за двома категоріями: "Всі" та "🇺🇦 УКР". Якщо масив фільмів порожній або не визначений, компонент нічого не рендерит. Якщо ж дані є, він використовує бібліотеку Swiper для створення слайдера, де кожен слайд представляє окремий фільм з його постером, назвою, роком випуску та рейтингом. Клік на фільм веде на його сторінку з детальною інформацією.
-
 'use client'
 
 import { useState } from 'react'
-import { TMDBMovie, getPosterUrl } from '@/lib/tmdb'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import Link from 'next/link'
-import SliderNav from '@/components/ui/SliderNav'
+import { TMDBMovie } from '@/lib/tmdb'
 import { Clapperboard } from 'lucide-react'
+import MovieSlider from '@/components/ui/MovieSlider'
 
 type Filter = 'all' | 'ua'
 
@@ -25,9 +18,9 @@ export default function PopularMovies({ movies }: Props) {
 
   return (
     <div className="bg-surface-1 border border-white/7 rounded-2xl overflow-hidden">
-      {/* Заголовок */}
-      <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2 mb-3">
+      {/* Заголовок з фільтром */}
+      <div className="px-4 pt-4 pb-1 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <Clapperboard size={16} className="text-accent-blue" />
           <h2 className="text-base font-black text-accent-gold">Популярні</h2>
         </div>
@@ -54,52 +47,9 @@ export default function PopularMovies({ movies }: Props) {
           </div>
         </div>
       </div>
-      {/* Swiper */}
-      <div className="relative">
-        <Swiper
-          modules={[Navigation]}
-          navigation={{
-            nextEl: '.popular-next',
-            prevEl: '.popular-prev',
-          }}
-          slidesPerView="auto"
-          spaceBetween={12}
-          slidesOffsetBefore={16}
-          slidesOffsetAfter={16}
-          className="pb-4"
-        >
-          {movies.map((movie) => (
-            <SwiperSlide key={movie.id} style={{ width: '112px' }}>
-              <Link
-                href={`/movie/${movie.id}`}
-                className="cursor-pointer select-none"
-              >
-                <div className="cursor-pointer">
-                  <div className="relative w-28 h-40 rounded-xl overflow-hidden mb-2 select-none">
-                    <img
-                      draggable={false}
-                      src={getPosterUrl(movie.poster_path)}
-                      alt={movie.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2 bg-black/70 text-accent-gold text-[10px] font-bold px-1.5 py-0.5 rounded-md">
-                      ⭐ {movie.vote_average.toFixed(1)}
-                    </div>
-                  </div>
-                  <p className="text-xs font-semibold text-text-1 line-clamp-2 leading-tight">
-                    {movie.title}
-                  </p>
-                  <p className="text-[11px] text-text-3 mt-1">
-                    {movie.release_date?.slice(0, 4)}
-                  </p>
-                </div>
-              </Link>
-            </SwiperSlide>
-          ))}
-        </Swiper>
 
-        <SliderNav prevClass="popular-prev" nextClass="popular-next" />
-      </div>
+      {/* Слайдер */}
+      <MovieSlider movies={movies} title="" />
     </div>
   )
 }
