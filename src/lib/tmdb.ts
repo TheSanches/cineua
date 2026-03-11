@@ -221,3 +221,16 @@ export async function getPersonCredits(
   if (!res.ok) throw new Error(`TMDB person credits error: ${res.status}`)
   return res.json() as Promise<TMDBPersonCredits>
 }
+
+export interface TMDBCrew {
+  id: number
+  name: string
+  job: string
+  department: string
+  profile_path: string | null
+}
+
+export interface TMDBCredits {
+  cast: TMDBCast[]
+  crew: TMDBCrew[]
+}

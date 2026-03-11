@@ -9,6 +9,7 @@ import BackButton from '@/components/ui/BackButton'
 import MovieCast from '@/components/movie/MovieCast'
 import SimilarMovies from '@/components/movie/SimilarMovies'
 import MovieActions from '@/components/movie/MovieActions'
+import Link from 'next/link'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -25,6 +26,12 @@ export default async function MoviePage({ params }: PageProps) {
 
   const cast = credits.cast.slice(0, 10) // перші 10 акторів
   const similarMovies = similar.results.slice(0, 10) // перші 10 схожих фільмів
+  const director = credits.crew.find((c) => c.job === 'Director') // режисер
+  const writer = credits.crew.find(
+    // сценарист
+    (c) => c.job === 'Screenplay' || c.job === 'Writer'
+  )
+  const producer = credits.crew.find((c) => c.job === 'Producer')
 
   return (
     <div className="min-h-screen">
@@ -97,6 +104,51 @@ export default async function MoviePage({ params }: PageProps) {
             </span>
           ))}
         </div>
+
+        {/* Режисер / Сценарист / Продюсер */}
+        {(director || writer || producer) && (
+          <div className="flex flex-col gap-2 mt-4">
+            {director && (
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-text-3 w-24 flex-shrink-0">
+                  Режисер
+                </span>
+                <Link
+                  href={`/person/${director.id}`}
+                  className="text-[13px] font-semibold text-accent-purple"
+                >
+                  {director.name}
+                </Link>
+              </div>
+            )}
+            {writer && (
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-text-3 w-24 flex-shrink-0">
+                  Сценарист
+                </span>
+                <Link
+                  href={`/person/${writer.id}`}
+                  className="text-[13px] font-semibold text-accent-purple"
+                >
+                  {writer.name}
+                </Link>
+              </div>
+            )}
+            {producer && (
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-text-3 w-24 flex-shrink-0">
+                  Продюсер
+                </span>
+                <Link
+                  href={`/person/${producer.id}`}
+                  className="text-[13px] font-semibold text-accent-purple"
+                >
+                  {producer.name}
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Опис */}
         <p className="text-sm text-text-2 leading-relaxed mt-4">
