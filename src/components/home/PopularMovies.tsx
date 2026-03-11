@@ -3,8 +3,12 @@
 import { useState } from 'react'
 import { TMDBMovie } from '@/lib/tmdb'
 import { Clapperboard } from 'lucide-react'
-import MovieSlider from '@/components/ui/MovieSlider'
 
+import dynamic from 'next/dynamic'
+
+const MovieSlider = dynamic(() => import('@/components/ui/MovieSlider'), {
+  ssr: false,
+})
 type Filter = 'all' | 'ua'
 
 interface Props {

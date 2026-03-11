@@ -21,12 +21,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#05050a] flex justify-center">
-      {/* Фоновий градієнт */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent-purple/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-accent-gold/5 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen bg-bg flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
         {/* Логотип */}
         <div className="text-center mb-8">
