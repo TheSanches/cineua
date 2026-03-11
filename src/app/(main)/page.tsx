@@ -7,6 +7,7 @@
 import { createClient } from '@/lib/supabase/server'
 import PopularMovies from '@/components/home/PopularMovies'
 import { getPopularMovies } from '@/lib/tmdb'
+import Link from 'next/link'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -28,10 +29,20 @@ export default async function HomePage() {
           <button className="w-10 h-10 bg-surface-1 border border-white/7 rounded-full flex items-center justify-center">
             🔔
           </button>
-          {/* Аватар */}
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-purple to-accent-gold flex items-center justify-center font-bold text-sm">
-            {user?.email?.[0]?.toUpperCase() ?? '?'}
-          </div>
+          {/* Аватар → перехід в профіль */}
+          <Link href="/profile">
+            {user?.user_metadata?.avatar_url ? (
+              <img
+                src={user.user_metadata.avatar_url}
+                alt="Профіль"
+                className="w-10 h-10 rounded-full border border-white/10"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-purple to-accent-gold flex items-center justify-center font-bold text-sm">
+                {user?.email?.[0]?.toUpperCase() ?? '?'}
+              </div>
+            )}
+          </Link>
         </div>
       </header>
 
