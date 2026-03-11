@@ -4,7 +4,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useState, useEffect } from 'react'
-import { Search, ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { TMDBGenre } from '@/lib/tmdb'
 
 interface Props {
@@ -25,9 +25,6 @@ export default function CatalogFilters({ genres }: Props) {
 
   const currentGenre = searchParams.get('genre') ?? ''
   const currentSort = searchParams.get('sort') ?? ''
-  const currentQuery = searchParams.get('query') ?? ''
-
-  const [searchValue, setSearchValue] = useState(currentQuery)
 
   const updateParam = useCallback(
     (key: string, value: string) => {
@@ -42,27 +39,8 @@ export default function CatalogFilters({ genres }: Props) {
     [router, pathname, searchParams]
   )
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      updateParam('query', searchValue)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [searchValue]) // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <div className="flex flex-col gap-3 pb-3">
-      {/* Пошук */}
-      <div className="mx-5 bg-surface-1 border border-white/7 rounded-2xl px-4 py-3 flex items-center gap-3">
-        <Search size={18} className="text-text-2 flex-shrink-0" />
-        <input
-          type="text"
-          placeholder="Пошук фільмів..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="bg-transparent text-text-1 text-sm placeholder:text-text-3 outline-none w-full"
-        />
-      </div>
-
       {/* Жанри */}
       <div className="flex flex-col gap-2 px-5">
         <div
