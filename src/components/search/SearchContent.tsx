@@ -89,6 +89,7 @@ export default function SearchContent({ genres }: Props) {
   }
 
   const showEmpty = !query && !selectedGenre && results.length === 0
+  const showGenres = !query && results.length === 0 // показуємо жанри ЗАВЖДИ коли немає активного пошуку
 
   return (
     <div className="px-5">
@@ -153,10 +154,21 @@ export default function SearchContent({ genres }: Props) {
       {/* Результати по жанру */}
       {!loading && !query && selectedGenre && (
         <div>
-          <p className="text-xs text-text-3 mb-3">
-            Жанр:{' '}
-            <span className="text-text-1 font-bold">{selectedGenre.name}</span>
-          </p>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-xs text-text-3">
+              Жанр:{' '}
+              <span className="text-text-1 font-bold">
+                {selectedGenre.name}
+              </span>
+            </p>
+            <Link
+              href="/search"
+              className="w-5 h-5 bg-surface-1 border border-white/7 rounded-full flex items-center justify-center"
+            >
+              <X size={10} className="text-text-3" />
+            </Link>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             {genreMovies.map((movie) => (
               <MovieCard
@@ -174,7 +186,7 @@ export default function SearchContent({ genres }: Props) {
       )}
 
       {/* Популярні жанри */}
-      {showEmpty && (
+      {showGenres && (
         <div className="mb-6">
           <h2 className="text-sm font-bold text-text-3 uppercase tracking-wider mb-3">
             Популярні жанри
