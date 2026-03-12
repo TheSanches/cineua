@@ -89,9 +89,12 @@ function CommentItem({
         {comment.rating && <StarRating value={comment.rating} />}
 
         {/* Текст */}
-        <p className="text-sm text-text-2 mt-2 leading-relaxed">
-          {comment.text}
-        </p>
+        {/* Текст */}
+        {comment.text && (
+          <p className="text-sm text-text-2 mt-2 leading-relaxed">
+            {comment.text}
+          </p>
+        )}
 
         {/* Дії */}
         <div className="flex items-center gap-3 mt-3">
@@ -188,24 +191,60 @@ export default function MovieComments({
   const replies = comments.filter((c) => !!c.parent_id)
 
   async function handleSubmit() {
-    if (!text.trim()) return
+    if (!text.trim() && !rating) return
     setLoading(true)
     try {
       await addComment(movieId, text, rating || null, replyTo?.id ?? null)
-      // Оновити список
-      const newComment: MovieComment = {
-        id: crypto.randomUUID(),
-        movie_id: movieId,
-        user_id: currentUserId ?? '',
-        user_name: 'Ви',
-        user_avatar: null,
-        text,
-        rating: rating || null,
-        likes: 0,
-        parent_id: replyTo?.id ?? null,
-        created_at: new Date().toISOString(),
+
+      if (rating && !replyTo) {
+        // Перевіряємо чи вже є коментар з рейтингом в стейті
+        const existingIndex = comments.findIndex(
+          (c) =>
+            c.user_id === currentUserId && c.rating !== null && !c.parent_id
+        )
+
+        if (existingIndex !== -1) {
+          // Оновлюємо існуючий
+          setComments((prev) =>
+            prev.map((c) =>
+              c.user_id === currentUserId && c.rating !== null && !c.parent_id
+                ? { ...c, rating, text: text || null }
+                : c
+            )
+          )
+        } else {
+          // Додаємо новий
+          const newComment: MovieComment = {
+            id: crypto.randomUUID(),
+            movie_id: movieId,
+            user_id: currentUserId ?? '',
+            user_name: 'Ви',
+            user_avatar: null,
+            text: text || null,
+            rating: rating || null,
+            likes: 0,
+            parent_id: null,
+            created_at: new Date().toISOString(),
+          }
+          setComments((prev) => [newComment, ...prev])
+        }
+      } else {
+        // Звичайний коментар або відповідь
+        const newComment: MovieComment = {
+          id: crypto.randomUUID(),
+          movie_id: movieId,
+          user_id: currentUserId ?? '',
+          user_name: 'Ви',
+          user_avatar: null,
+          text: text || null,
+          rating: null,
+          likes: 0,
+          parent_id: replyTo?.id ?? null,
+          created_at: new Date().toISOString(),
+        }
+        setComments((prev) => [newComment, ...prev])
       }
-      setComments((prev) => [newComment, ...prev])
+
       setText('')
       setRating(0)
       setReplyTo(null)
@@ -279,7 +318,7 @@ export default function MovieComments({
           />
           <button
             onClick={handleSubmit}
-            disabled={loading || !text.trim()}
+            disabled={loading || (!text.trim() && !rating)}
             className="mt-2 px-5 py-2 bg-accent-purple text-white text-sm font-bold rounded-xl disabled:opacity-50 transition-opacity"
           >
             {loading ? 'Відправка...' : 'Відправити'}

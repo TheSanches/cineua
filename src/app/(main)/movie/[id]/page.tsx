@@ -12,7 +12,13 @@ import MovieActions from '@/components/movie/MovieActions'
 import Link from 'next/link'
 import UaVoteButton from '@/components/movie/UaVoteButton'
 import MovieComments from '@/components/movie/MovieComments'
-import { getUaVotesCount, getUaVote, getMovieComments } from '@/lib/userMovies'
+import {
+  getUaVotesCount,
+  getUaVote,
+  getMovieComments,
+  getMovieUserRating,
+  getMovieUserRatingCount,
+} from '@/lib/userMovies'
 import { createClient } from '@/lib/supabase/server'
 
 interface PageProps {
@@ -26,15 +32,25 @@ export default async function MoviePage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const [movie, credits, similar, votesCount, userVoted, comments] =
-    await Promise.all([
-      getMovieDetails(Number(id)), // деталі фільму
-      getMovieCredits(Number(id)), // актори та команда
-      getSimilarMovies(Number(id)), // схожі фільми
-      getUaVotesCount(Number(id)), // кількість голосів за українське озвучення
-      getUaVote(Number(id)), // чи голосував поточний користувач
-      getMovieComments(Number(id)), // коментарі до фільму
-    ])
+  const [
+    movie,
+    credits,
+    similar,
+    votesCount,
+    userVoted,
+    comments,
+    userRating,
+    userRatingCount,
+  ] = await Promise.all([
+    getMovieDetails(Number(id)), // деталі фільму
+    getMovieCredits(Number(id)), // актори та команда
+    getSimilarMovies(Number(id)), // схожі фільми
+    getUaVotesCount(Number(id)), // кількість голосів за українське озвучення
+    getUaVote(Number(id)), // чи голосував поточний користувач
+    getMovieComments(Number(id)), // коментарі до фільму
+    getMovieUserRating(Number(id)), // рейтинг користувача для цього фільму
+    getMovieUserRatingCount(Number(id)), // кількість рейтингів користувачів для цього фільму
+  ])
 
   const cast = credits.cast.slice(0, 10) // перші 10 акторів
   const similarMovies = similar.results.slice(0, 10) // перші 10 схожих фільмів
@@ -90,21 +106,35 @@ export default async function MoviePage({ params }: PageProps) {
         </div>
 
         {/* Рейтинг */}
-        <div className="flex gap-6 mt-5">
-          <div>
+        <div className="flex gap-3 mt-5">
+          <div className="flex-1 bg-surface-1 border border-white/7 rounded-xl p-3 text-center">
             <div className="text-xl font-black text-accent-gold">
               {movie.vote_average.toFixed(1)}
             </div>
-            <div className="text-[10px] text-text-3">TMDB</div>
-          </div>
-          <div>
-            <div className="text-xl font-black text-text-1">
-              {movie.vote_count.toLocaleString()}
+            <div className="text-[10px] text-text-3 mt-0.5">
+              TMDB{' '}
+              <span className="text-[10px] text-accent-blue mt-0.5">
+                {movie.vote_count.toLocaleString()}
+              </span>{' '}
+              Голосів
             </div>
-            <div className="text-[10px] text-text-3">Голосів</div>
           </div>
-        </div>
 
+          {userRating && (
+            <div className="flex-1 bg-surface-1 border border-accent-purple/30 rounded-xl p-3 text-center">
+              <div className="text-xl font-black text-accent-purple">
+                ⭐ {userRating.toFixed(1)}
+              </div>
+              <div className="text-[10px] text-text-3 mt-0.5">
+                CineUA{' '}
+                <span className="text-[10px] text-accent-blue mt-0.5">
+                  {userRatingCount}
+                </span>{' '}
+                відгуків
+              </div>
+            </div>
+          )}
+        </div>
         {/* Жанри */}
         <div className="flex gap-2 mt-4 flex-wrap">
           {movie.genres.map((genre) => (

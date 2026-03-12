@@ -156,7 +156,7 @@ export interface MovieComment {
   user_id: string
   user_name: string
   user_avatar: string | null
-  text: string
+  text: string | null
   rating: number | null
   likes?: number // тепер розраховується окремо
   parent_id: string | null
@@ -192,17 +192,37 @@ export async function addComment(
   } = await supabase.auth.getUser()
   if (!user) throw new Error('Не авторизований')
 
+  // Якщо є рейтинг і це не відповідь — перевіряємо чи вже є коментар з рейтингом
+  if (rating && !parentId) {
+    const { data: existing } = await supabase
+      .from('movie_comments')
+      .select('id')
+      .eq('movie_id', movieId)
+      .eq('user_id', user.id)
+      .not('rating', 'is', null)
+      .is('parent_id', null)
+      .maybeSingle()
+
+    if (existing) {
+      // Оновлюємо рейтинг існуючого коментаря
+      await supabase
+        .from('movie_comments')
+        .update({ rating, text: text || null })
+        .eq('id', existing.id)
+      return
+    }
+  }
+
   await supabase.from('movie_comments').insert({
     movie_id: movieId,
     user_id: user.id,
     user_name: user.user_metadata?.full_name ?? user.email,
     user_avatar: user.user_metadata?.avatar_url ?? null,
-    text,
+    text: text || null,
     rating,
     parent_id: parentId,
   })
 }
-
 export async function deleteComment(commentId: string): Promise<void> {
   const supabase = createClient()
   await supabase.from('movie_comments').delete().eq('id', commentId)
@@ -256,4 +276,33 @@ export async function getCommentLikes(
     .maybeSingle()
 
   return { count: count ?? 0, userLiked: !!data }
+}
+
+export async function getMovieUserRating(
+  movieId: number
+): Promise<number | null> {
+  const supabase = createClient()
+  const { data } = await supabase
+    .from('movie_comments')
+    .select('rating')
+    .eq('movie_id', movieId)
+    .not('rating', 'is', null)
+
+  if (!data?.length) return null
+
+  const avg = data.reduce((sum, c) => sum + (c.rating ?? 0), 0) / data.length
+  const outOf10 = avg * 2 // переводимо з 5 в 10
+  return Math.round(outOf10 * 10) / 10
+}
+
+export async function getMovieUserRatingCount(
+  movieId: number
+): Promise<number> {
+  const supabase = createClient()
+  const { count } = await supabase
+    .from('movie_comments')
+    .select('*', { count: 'exact', head: true })
+    .eq('movie_id', movieId)
+    .not('rating', 'is', null)
+  return count ?? 0
 }
