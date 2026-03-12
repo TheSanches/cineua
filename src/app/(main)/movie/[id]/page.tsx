@@ -11,7 +11,9 @@ import SimilarMovies from '@/components/movie/SimilarMovies'
 import MovieActions from '@/components/movie/MovieActions'
 import Link from 'next/link'
 import UaVoteButton from '@/components/movie/UaVoteButton'
-import { getUaVotesCount, getUaVote } from '@/lib/userMovies'
+import MovieComments from '@/components/movie/MovieComments'
+import { getUaVotesCount, getUaVote, getMovieComments } from '@/lib/userMovies'
+import { createClient } from '@/lib/supabase/server'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -19,14 +21,20 @@ interface PageProps {
 
 export default async function MoviePage({ params }: PageProps) {
   const { id } = await params
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  const [movie, credits, similar, votesCount, userVoted] = await Promise.all([
-    getMovieDetails(Number(id)), // деталі фільму
-    getMovieCredits(Number(id)), // актори та команда
-    getSimilarMovies(Number(id)), // схожі фільми
-    getUaVotesCount(Number(id)), // кількість голосів за українське озвучення
-    getUaVote(Number(id)), // чи голосував поточний користувач
-  ])
+  const [movie, credits, similar, votesCount, userVoted, comments] =
+    await Promise.all([
+      getMovieDetails(Number(id)), // деталі фільму
+      getMovieCredits(Number(id)), // актори та команда
+      getSimilarMovies(Number(id)), // схожі фільми
+      getUaVotesCount(Number(id)), // кількість голосів за українське озвучення
+      getUaVote(Number(id)), // чи голосував поточний користувач
+      getMovieComments(Number(id)), // коментарі до фільму
+    ])
 
   const cast = credits.cast.slice(0, 10) // перші 10 акторів
   const similarMovies = similar.results.slice(0, 10) // перші 10 схожих фільмів
@@ -180,6 +188,11 @@ export default async function MoviePage({ params }: PageProps) {
           voteAverage={movie.vote_average}
           releaseDate={movie.release_date}
           genreIds={movie.genres.map((g) => g.id)}
+        />
+        <MovieComments
+          movieId={movie.id}
+          initialComments={comments}
+          currentUserId={user?.id ?? null}
         />
       </div>
     </div>

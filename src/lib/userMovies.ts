@@ -148,3 +148,108 @@ export async function removeUaVote(movieId: number): Promise<void> {
     .eq('movie_id', movieId)
     .eq('user_id', user.id)
 }
+
+// Коментарі
+export interface MovieComment {
+  id: string
+  movie_id: number
+  user_id: string
+  user_name: string
+  user_avatar: string | null
+  text: string
+  rating: number | null
+  likes: number
+  parent_id: string | null
+  created_at: string
+}
+
+export async function getMovieComments(
+  movieId: number
+): Promise<MovieComment[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('movie_comments')
+    .select('*')
+    .eq('movie_id', movieId)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return (data ?? []) as MovieComment[]
+}
+
+export async function addComment(
+  movieId: number,
+  text: string,
+  rating: number | null,
+  parentId: string | null = null
+): Promise<void> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) throw new Error('Не авторизований')
+
+  await supabase.from('movie_comments').insert({
+    movie_id: movieId,
+    user_id: user.id,
+    user_name: user.user_metadata?.full_name ?? user.email,
+    user_avatar: user.user_metadata?.avatar_url ?? null,
+    text,
+    rating,
+    parent_id: parentId,
+  })
+}
+
+export async function deleteComment(commentId: string): Promise<void> {
+  const supabase = createClient()
+  await supabase.from('movie_comments').delete().eq('id', commentId)
+}
+
+export async function toggleCommentLike(commentId: string): Promise<boolean> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return false
+
+  const { data } = await supabase
+    .from('comment_likes')
+    .select('id')
+    .eq('comment_id', commentId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (data) {
+    await supabase.from('comment_likes').delete().eq('id', data.id)
+    return false
+  } else {
+    await supabase
+      .from('comment_likes')
+      .insert({ comment_id: commentId, user_id: user.id })
+    return true
+  }
+}
+
+export async function getCommentLikes(
+  commentId: string
+): Promise<{ count: number; userLiked: boolean }> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { count } = await supabase
+    .from('comment_likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('comment_id', commentId)
+
+  if (!user) return { count: count ?? 0, userLiked: false }
+
+  const { data } = await supabase
+    .from('comment_likes')
+    .select('id')
+    .eq('comment_id', commentId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  return { count: count ?? 0, userLiked: !!data }
+}
