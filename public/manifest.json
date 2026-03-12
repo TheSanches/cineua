@@ -2,7 +2,7 @@
   "name": "CineUA",
   "short_name": "CineUA",
   "description": "Фільми з українським озвученням",
-  "start_url": "/login",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#08080f",
   "theme_color": "#08080f",
