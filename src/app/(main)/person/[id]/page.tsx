@@ -7,6 +7,7 @@ import { getPersonDetails, getPersonCredits, getGenres } from '@/lib/tmdb'
 import BackButton from '@/components/ui/BackButton'
 import PersonMovies from '@/components/person/PersonMovies'
 import { BookOpen } from 'lucide-react'
+import Image from 'next/image'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -32,12 +33,13 @@ export default async function PersonPage({ params }: PageProps) {
 
       {/* Шапка */}
       <div className="flex flex-col items-center pt-8 px-5 pb-6">
-        <div className="w-28 h-28 rounded-full overflow-hidden bg-surface-2 mb-4 border-2 border-white/10">
+        <div className="w-28 h-28 rounded-full overflow-hidden bg-surface-2 mb-4 border-2 border-white/10 relative">
           {person.profile_path ? (
-            <img
+            <Image
               src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
               alt={person.name}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl">

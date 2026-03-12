@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import Link from 'next/link'
 import { Users } from 'lucide-react'
+import Image from 'next/image'
 
 interface Props {
   cast: TMDBCast[]
@@ -31,13 +32,13 @@ export default function MovieCast({ cast }: Props) {
           <SwiperSlide key={actor.id} style={{ width: '64px' }}>
             <Link href={`/person/${actor.id}`}>
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full overflow-hidden bg-surface-2 mb-2 mx-auto">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-surface-2 mb-2 mx-auto relative">
                   {actor.profile_path ? (
-                    <img
+                    <Image
                       src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
                       alt={actor.name}
-                      className="w-full h-full object-cover"
-                      draggable={false}
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-2xl">

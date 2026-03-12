@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import PopularMovies from '@/components/home/PopularMovies'
 import { getPopularMovies } from '@/lib/tmdb'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -32,10 +33,12 @@ export default async function HomePage() {
           {/* Аватар → перехід в профіль */}
           <Link href="/profile">
             {user?.user_metadata?.avatar_url ? (
-              <img
+              <Image
                 src={user.user_metadata.avatar_url}
                 alt="Профіль"
-                className="w-10 h-10 rounded-full border border-white/10"
+                width={40}
+                height={40}
+                className="rounded-full border border-white/10"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-purple to-accent-gold flex items-center justify-center font-bold text-sm">

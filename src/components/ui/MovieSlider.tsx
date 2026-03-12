@@ -8,6 +8,7 @@ import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface Props {
   movies: TMDBMovie[] | undefined
@@ -46,12 +47,13 @@ export default function MovieSlider({
           <SwiperSlide key={movie.id} style={{ width: '112px' }}>
             <Link href={`/movie/${movie.id}`} className="select-none">
               <div className="relative w-28 h-40 rounded-xl overflow-hidden mb-2">
-                <img
-                  draggable={false}
+                <Image
                   src={getPosterUrl(movie.poster_path)}
                   alt={movie.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
+
                 <div className="absolute top-2 right-2 bg-black/70 text-accent-gold text-[10px] font-bold px-1.5 py-0.5 rounded-md">
                   ⭐ {movie.vote_average.toFixed(1)}
                 </div>

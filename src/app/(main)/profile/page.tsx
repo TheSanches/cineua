@@ -6,7 +6,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { LogOut, Bell, Globe } from 'lucide-react'
-import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -36,10 +36,12 @@ export default async function ProfilePage() {
       {/* Аватар і ім'я */}
       <div className="flex flex-col items-center px-5 pb-6">
         {avatar ? (
-          <img
+          <Image
             src={avatar}
             alt={name}
-            className="w-20 h-20 rounded-full border-2 border-white/10 mb-3"
+            width={80}
+            height={80}
+            className="rounded-full border-2 border-white/10 mb-3"
           />
         ) : (
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-purple to-accent-gold flex items-center justify-center text-2xl font-black mb-3">

@@ -1,3 +1,4 @@
+// Компонент для відображення коментарів до фільму, а також форми для додавання нового коментаря або відповіді на існуючий
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -9,6 +10,7 @@ import {
   getMovieComments,
 } from '@/lib/userMovies'
 import { Heart, Trash2, Reply, Star } from 'lucide-react'
+import Image from 'next/image'
 
 interface Props {
   movieId: number
@@ -67,10 +69,12 @@ function CommentItem({
         {/* Хедер */}
         <div className="flex items-center gap-2 mb-2">
           {comment.user_avatar ? (
-            <img
+            <Image
               src={comment.user_avatar}
-              className="w-7 h-7 rounded-full"
               alt=""
+              width={33}
+              height={33}
+              className="rounded-full border border-white/10"
             />
           ) : (
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-accent-purple to-accent-gold flex items-center justify-center text-xs font-bold">
@@ -133,10 +137,12 @@ function CommentItem({
             >
               <div className="flex items-center gap-2 mb-1">
                 {reply.user_avatar ? (
-                  <img
+                  <Image
                     src={reply.user_avatar}
-                    className="w-6 h-6 rounded-full"
                     alt=""
+                    width={33}
+                    height={33}
+                    className="rounded-full border border-white/10"
                   />
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent-purple to-accent-gold flex items-center justify-center text-[10px] font-bold">

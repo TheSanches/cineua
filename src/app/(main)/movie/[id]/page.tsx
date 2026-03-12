@@ -20,6 +20,7 @@ import {
   getMovieUserRatingCount,
 } from '@/lib/userMovies'
 import { createClient } from '@/lib/supabase/server'
+import Image from 'next/image'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -68,25 +69,29 @@ export default async function MoviePage({ params }: PageProps) {
 
       {/* Backdrop */}
       <div className="relative h-72">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: movie.backdrop_path
-              ? `url(https://image.tmdb.org/t/p/w780${movie.backdrop_path})`
-              : undefined,
-          }}
-        />
+        {movie.backdrop_path && (
+          <Image
+            src={`https://image.tmdb.org/t/p/w780${movie.backdrop_path}`}
+            alt={movie.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-bg" />
       </div>
 
       {/* Постер + інфо */}
       <div className="px-5 -mt-16 relative">
         <div className="flex gap-4">
-          <img
-            src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
-            alt={movie.title}
-            className="w-24 h-36 rounded-xl object-cover shadow-xl flex-shrink-0"
-          />
+          <div className="relative w-24 h-36 rounded-xl overflow-hidden shadow-xl flex-shrink-0">
+            <Image
+              src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
+              alt={movie.title}
+              fill
+              className="object-cover"
+            />
+          </div>
           <div className="pt-10 flex flex-col gap-1">
             <h1 className="text-lg font-black text-text-1 leading-tight">
               {movie.title}
