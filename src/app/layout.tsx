@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="uk">
       <head>
         <meta name="theme-color" content="#08080f" />
-        <link rel="manifest" href="/manifest.json" />
+
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <script
           dangerouslySetInnerHTML={{
