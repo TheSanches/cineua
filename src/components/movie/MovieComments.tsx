@@ -182,7 +182,6 @@ export default function MovieComments({
   // Завантажуємо актуальні дані при монтуванні
   useEffect(() => {
     getMovieComments(movieId).then((data) => {
-      console.log('comments from DB:', data)
       setComments(data)
     })
   }, [movieId])
