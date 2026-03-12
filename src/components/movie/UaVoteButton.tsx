@@ -1,7 +1,10 @@
+// компонент кнопки голосування за українське озвучення
+
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { addUaVote, removeUaVote } from '@/lib/userMovies'
+import { getUaVotesCount, getUaVote } from '@/lib/userMovies'
 
 interface Props {
   movieId: number
@@ -17,6 +20,16 @@ export default function UaVoteButton({
   const [voted, setVoted] = useState(initialVoted)
   const [count, setCount] = useState(initialCount)
   const [loading, setLoading] = useState(false)
+
+  // Перевіряємо актуальний стан при монтуванні
+  useEffect(() => {
+    Promise.all([getUaVote(movieId), getUaVotesCount(movieId)]).then(
+      ([userVoted, votesCount]) => {
+        setVoted(userVoted)
+        setCount(votesCount)
+      }
+    )
+  }, [movieId])
 
   async function handleClick() {
     setLoading(true)

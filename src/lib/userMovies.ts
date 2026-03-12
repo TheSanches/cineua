@@ -158,7 +158,7 @@ export interface MovieComment {
   user_avatar: string | null
   text: string
   rating: number | null
-  likes: number
+  likes?: number // тепер розраховується окремо
   parent_id: string | null
   created_at: string
 }
@@ -169,11 +169,15 @@ export async function getMovieComments(
   const supabase = createClient()
   const { data, error } = await supabase
     .from('movie_comments')
-    .select('*')
+    .select('*, comment_likes(count)')
     .eq('movie_id', movieId)
     .order('created_at', { ascending: false })
   if (error) throw error
-  return (data ?? []) as MovieComment[]
+
+  return (data ?? []).map((c) => ({
+    ...c,
+    likes: c.comment_likes?.[0]?.count ?? 0,
+  })) as MovieComment[]
 }
 
 export async function addComment(

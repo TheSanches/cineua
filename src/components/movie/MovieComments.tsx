@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   MovieComment,
   addComment,
   deleteComment,
   toggleCommentLike,
+  getMovieComments,
 } from '@/lib/userMovies'
 import { Heart, Trash2, Reply, Star } from 'lucide-react'
 
@@ -99,7 +100,7 @@ function CommentItem({
             className="flex items-center gap-1 text-[11px] text-text-3 hover:text-danger transition-colors"
           >
             <Heart size={13} />
-            {comment.likes > 0 && <span>{comment.likes}</span>}
+            {(comment.likes ?? 0) > 0 && <span>{comment.likes}</span>}
           </button>
           <button
             onClick={() => onReply(comment.id, comment.user_name)}
@@ -175,6 +176,14 @@ export default function MovieComments({
   )
   const [loading, setLoading] = useState(false)
 
+  // Завантажуємо актуальні дані при монтуванні
+  useEffect(() => {
+    getMovieComments(movieId).then((data) => {
+      console.log('comments from DB:', data)
+      setComments(data)
+    })
+  }, [movieId])
+
   const topComments = comments.filter((c) => !c.parent_id)
   const replies = comments.filter((c) => !!c.parent_id)
 
@@ -211,9 +220,18 @@ export default function MovieComments({
   }
 
   async function handleLike(id: string) {
-    await toggleCommentLike(id)
+    const liked = await toggleCommentLike(id)
     setComments((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, likes: c.likes + 1 } : c))
+      prev.map((c) =>
+        c.id === id
+          ? {
+              ...c,
+              likes: liked
+                ? (c.likes ?? 0) + 1
+                : Math.max(0, (c.likes ?? 0) - 1),
+            }
+          : c
+      )
     )
   }
 
