@@ -10,6 +10,8 @@ import MovieCast from '@/components/movie/MovieCast'
 import SimilarMovies from '@/components/movie/SimilarMovies'
 import MovieActions from '@/components/movie/MovieActions'
 import Link from 'next/link'
+import UaVoteButton from '@/components/movie/UaVoteButton'
+import { getUaVotesCount, getUaVote } from '@/lib/userMovies'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -18,10 +20,12 @@ interface PageProps {
 export default async function MoviePage({ params }: PageProps) {
   const { id } = await params
 
-  const [movie, credits, similar] = await Promise.all([
+  const [movie, credits, similar, votesCount, userVoted] = await Promise.all([
     getMovieDetails(Number(id)), // деталі фільму
-    getMovieCredits(Number(id)), // акторський склад
+    getMovieCredits(Number(id)), // актори та команда
     getSimilarMovies(Number(id)), // схожі фільми
+    getUaVotesCount(Number(id)), // кількість голосів за українське озвучення
+    getUaVote(Number(id)), // чи голосував поточний користувач
   ])
 
   const cast = credits.cast.slice(0, 10) // перші 10 акторів
@@ -162,20 +166,11 @@ export default async function MoviePage({ params }: PageProps) {
         <SimilarMovies movies={similarMovies} />
 
         {/* УКР краудсорсинг */}
-        <div className="mt-5 bg-ua/6 border border-ua/20 rounded-2xl p-4 flex items-center gap-3">
-          <span className="text-2xl">🇺🇦</span>
-          <div className="flex-1">
-            <h4 className="text-sm font-bold text-ua">
-              Є українське озвучення?
-            </h4>
-            <p className="text-[11px] text-text-3 mt-0.5">
-              Допоможи іншим глядачам
-            </p>
-          </div>
-          <button className="px-4 py-2 bg-ua text-black text-xs font-black rounded-xl">
-            Так
-          </button>
-        </div>
+        <UaVoteButton
+          movieId={movie.id}
+          initialVoted={userVoted}
+          initialCount={votesCount}
+        />
 
         {/* Дії */}
         <MovieActions

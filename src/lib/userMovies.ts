@@ -99,3 +99,52 @@ export async function getMoviesByStatus(
   if (error) throw error
   return (data ?? []) as UserMovie[]
 }
+
+// UA озвучення — голосування
+export async function getUaVotesCount(movieId: number): Promise<number> {
+  const supabase = createClient()
+  const { count } = await supabase
+    .from('movie_ua_votes')
+    .select('*', { count: 'exact', head: true })
+    .eq('movie_id', movieId)
+  return count ?? 0
+}
+
+export async function getUaVote(movieId: number): Promise<boolean> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return false
+  const { data } = await supabase
+    .from('movie_ua_votes')
+    .select('id')
+    .eq('movie_id', movieId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+  return !!data
+}
+
+export async function addUaVote(movieId: number): Promise<void> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return
+  await supabase
+    .from('movie_ua_votes')
+    .insert({ movie_id: movieId, user_id: user.id })
+}
+
+export async function removeUaVote(movieId: number): Promise<void> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return
+  await supabase
+    .from('movie_ua_votes')
+    .delete()
+    .eq('movie_id', movieId)
+    .eq('user_id', user.id)
+}
