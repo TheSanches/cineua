@@ -107,7 +107,7 @@ export default async function MoviePage({ params }: PageProps) {
 
         {/* Рейтинг */}
         <div className="flex gap-3 mt-5">
-          <div className="flex-1 bg-surface-1 border border-white/7 rounded-xl p-3 text-center">
+          <div className="flex-1 bg-surface-1 border border-white/7 rounded-xl p-2 text-center">
             <div className="text-xl font-black text-accent-gold">
               {movie.vote_average.toFixed(1)}
             </div>
@@ -121,7 +121,7 @@ export default async function MoviePage({ params }: PageProps) {
           </div>
 
           {userRating && (
-            <div className="flex-1 bg-surface-1 border border-accent-purple/30 rounded-xl p-3 text-center">
+            <div className="flex-1 bg-surface-1 border border-accent-purple/30 rounded-xl p-2 text-center">
               <div className="text-xl font-black text-accent-purple">
                 ⭐ {userRating.toFixed(1)}
               </div>
