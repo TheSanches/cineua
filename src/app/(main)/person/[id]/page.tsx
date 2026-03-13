@@ -25,7 +25,6 @@ export default async function PersonPage({ params }: PageProps) {
   const movies = credits.cast
     .filter((m) => m.poster_path)
     .sort((a, b) => b.popularity - a.popularity)
-    .slice(0, 20)
 
   return (
     <div className="min-h-screen pb-10">

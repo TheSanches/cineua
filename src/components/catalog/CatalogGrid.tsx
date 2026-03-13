@@ -5,6 +5,7 @@
 import { TMDBMovie, TMDBGenre } from '@/lib/tmdb'
 import { useState, useEffect } from 'react'
 import MovieCard from '@/components/ui/MovieCard'
+import { useSearchParams } from 'next/navigation'
 
 interface Props {
   movies: TMDBMovie[] | undefined
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const CatalogGrid: React.FC<Props> = ({ movies, genres }) => {
+  const searchParams = useSearchParams()
   const [allMovies, setAllMovies] = useState<TMDBMovie[]>(movies ?? [])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -19,12 +21,19 @@ const CatalogGrid: React.FC<Props> = ({ movies, genres }) => {
   useEffect(() => {
     setAllMovies(movies ?? [])
     setPage(1)
-  }, [movies])
+  }, [movies, searchParams])
 
   async function loadMore() {
     setLoading(true)
     const nextPage = page + 1
-    const res = await fetch(`/api/movies/popular?page=${nextPage}`)
+    const genre = searchParams.get('genre') ?? ''
+    const sort = searchParams.get('sort') ?? ''
+
+    const params = new URLSearchParams({ page: String(nextPage) })
+    if (genre) params.set('genreId', genre)
+    if (sort) params.set('sort', sort)
+
+    const res = await fetch(`/api/movies/popular?${params.toString()}`)
     const data = await res.json()
 
     setAllMovies((prev) => {
