@@ -4,7 +4,13 @@
  * Показує деталі, рейтинг, акторів, схожі фільми
  */
 
-import { getMovieDetails, getMovieCredits, getSimilarMovies } from '@/lib/tmdb'
+import {
+  getMovieDetails,
+  getMovieCredits,
+  getSimilarMovies,
+  getMovieVideos,
+  getMovieImages,
+} from '@/lib/tmdb'
 import BackButton from '@/components/ui/BackButton'
 import MovieCast from '@/components/movie/MovieCast'
 import SimilarMovies from '@/components/movie/SimilarMovies'
@@ -21,6 +27,8 @@ import {
 } from '@/lib/userMovies'
 import { createClient } from '@/lib/supabase/server'
 import Image from 'next/image'
+import MovieTrailer from '@/components/movie/MovieTrailer'
+import MovieImages from '@/components/movie/MovieImages'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -42,6 +50,8 @@ export default async function MoviePage({ params }: PageProps) {
     comments,
     userRating,
     userRatingCount,
+    videos,
+    images,
   ] = await Promise.all([
     getMovieDetails(Number(id)), // деталі фільму
     getMovieCredits(Number(id)), // актори та команда
@@ -51,7 +61,11 @@ export default async function MoviePage({ params }: PageProps) {
     getMovieComments(Number(id)), // коментарі до фільму
     getMovieUserRating(Number(id)), // рейтинг користувача для цього фільму
     getMovieUserRatingCount(Number(id)), // кількість рейтингів користувачів для цього фільму
+    getMovieVideos(Number(id)), // відео (трейлери)
+    getMovieImages(Number(id)), // зображення (постери, бекдропи)
   ])
+
+  const trailer = videos[0] // перший трейлер
 
   const cast = credits.cast.slice(0, 10) // перші 10 акторів
   const similarMovies = similar.results.slice(0, 10) // перші 10 схожих фільмів
@@ -61,7 +75,7 @@ export default async function MoviePage({ params }: PageProps) {
     (c) => c.job === 'Screenplay' || c.job === 'Writer'
   )
   const producer = credits.crew.find((c) => c.job === 'Producer')
-
+  console.log('images:', images.length, images[0])
   return (
     <div className="min-h-screen">
       {/* Кнопка назад */}
@@ -109,7 +123,6 @@ export default async function MoviePage({ params }: PageProps) {
             </div>
           </div>
         </div>
-
         {/* Рейтинг */}
         <div className="flex gap-3 mt-5">
           <div className="flex-1 bg-surface-1 border border-white/7 rounded-xl p-2 text-center">
@@ -151,7 +164,6 @@ export default async function MoviePage({ params }: PageProps) {
             </span>
           ))}
         </div>
-
         {/* Режисер / Сценарист / Продюсер */}
         {(director || writer || producer) && (
           <div className="flex flex-col gap-2 mt-4">
@@ -196,25 +208,25 @@ export default async function MoviePage({ params }: PageProps) {
             )}
           </div>
         )}
-
         {/* Опис */}
         <p className="text-sm text-text-2 leading-relaxed mt-4">
           {movie.overview || 'Опис відсутній'}
         </p>
-
         {/* Актори */}
         <MovieCast cast={cast} />
+        {/* Трейлер */}
+        {trailer && <MovieTrailer trailer={trailer} />}
 
+        {/* Кадри */}
+        <MovieImages images={images} />
         {/* Схожі фільми */}
         <SimilarMovies movies={similarMovies} />
-
         {/* УКР краудсорсинг */}
         <UaVoteButton
           movieId={movie.id}
           initialVoted={userVoted}
           initialCount={votesCount}
         />
-
         {/* Дії */}
         <MovieActions
           movieId={movie.id}

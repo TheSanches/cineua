@@ -234,3 +234,43 @@ export interface TMDBCredits {
   cast: TMDBCast[]
   crew: TMDBCrew[]
 }
+
+// Трейлери та відео
+export interface TMDBVideo {
+  id: string
+  key: string // YouTube ключ
+  name: string
+  site: string // 'YouTube'
+  type: string // 'Trailer', 'Teaser', etc.
+  official: boolean
+}
+
+export interface TMDBImage {
+  file_path: string
+  width: number
+  height: number
+}
+
+// Отримати трейлери фільму
+export async function getMovieVideos(movieId: number): Promise<TMDBVideo[]> {
+  const res = await fetch(`${BASE_URL}/movie/${movieId}/videos`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error(`TMDB videos error: ${res.status}`)
+  const data = (await res.json()) as { results: TMDBVideo[] }
+  return data.results.filter(
+    (v) => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
+  )
+}
+
+// Отримати скріншоти фільму
+export async function getMovieImages(movieId: number): Promise<TMDBImage[]> {
+  const res = await fetch(`${BASE_URL}/movie/${movieId}/images`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error(`TMDB images error: ${res.status}`)
+  const data = (await res.json()) as { backdrops: TMDBImage[] }
+  return data.backdrops.slice(0, 10)
+}
