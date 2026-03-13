@@ -29,6 +29,7 @@ import { createClient } from '@/lib/supabase/server'
 import Image from 'next/image'
 import MovieTrailer from '@/components/movie/MovieTrailer'
 import MovieImages from '@/components/movie/MovieImages'
+import RecommendButton from '@/components/movie/RecommendButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -37,6 +38,7 @@ interface PageProps {
 export default async function MoviePage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -235,6 +237,13 @@ export default async function MoviePage({ params }: PageProps) {
           voteAverage={movie.vote_average}
           releaseDate={movie.release_date}
           genreIds={movie.genres.map((g) => g.id)}
+        />
+        {/* Рекомендувати */}
+        <RecommendButton
+          movieId={movie.id}
+          movieTitle={movie.title}
+          posterPath={movie.poster_path}
+          user={user}
         />
         <MovieComments
           movieId={movie.id}

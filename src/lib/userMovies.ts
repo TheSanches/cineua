@@ -306,3 +306,87 @@ export async function getMovieUserRatingCount(
     .not('rating', 'is', null)
   return count ?? 0
 }
+
+// ===== RECOMMENDATIONS =====
+
+export async function getMovieRecommendation(movieId: number) {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data } = await supabase
+    .from('movie_recommendations')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('movie_id', movieId)
+    .maybeSingle() // ← було .single()
+
+  return data
+}
+
+export async function addRecommendation(
+  movieId: number,
+  movieTitle: string,
+  posterPath: string | null,
+  comment: string
+) {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const userName =
+    user.user_metadata?.full_name || user.user_metadata?.name || 'Користувач'
+  const userAvatar = user.user_metadata?.avatar_url || null
+
+  const { data, error } = await supabase
+    .from('movie_recommendations')
+    .upsert(
+      {
+        user_id: user.id,
+        movie_id: movieId,
+        movie_title: movieTitle,
+        poster_path: posterPath,
+        comment: comment.trim() || '',
+        user_name: userName,
+        user_avatar: userAvatar,
+      },
+      { onConflict: 'user_id,movie_id' }
+    )
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function removeRecommendation(movieId: number) {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return
+
+  await supabase
+    .from('movie_recommendations')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('movie_id', movieId)
+}
+
+export async function getCommunityRecommendations() {
+  const supabase = createClient()
+
+  const { data } = await supabase
+    .from('movie_recommendations')
+    .select(
+      'id, movie_id, movie_title, poster_path, comment, user_name, user_avatar, created_at'
+    )
+    .order('created_at', { ascending: false })
+    .limit(30)
+
+  return data || []
+}
