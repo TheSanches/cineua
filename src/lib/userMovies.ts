@@ -192,7 +192,6 @@ export async function addComment(
   } = await supabase.auth.getUser()
   if (!user) throw new Error('Не авторизований')
 
-  // Якщо є рейтинг і це не відповідь — перевіряємо чи вже є коментар з рейтингом
   if (rating && !parentId) {
     const { data: existing } = await supabase
       .from('movie_comments')
@@ -203,17 +202,19 @@ export async function addComment(
       .is('parent_id', null)
       .maybeSingle()
 
+    console.log('existing:', existing)
+
     if (existing) {
-      // Оновлюємо рейтинг існуючого коментаря
-      await supabase
+      const { error } = await supabase
         .from('movie_comments')
         .update({ rating, text: text || null })
         .eq('id', existing.id)
+      console.log('update error:', error)
       return
     }
   }
 
-  await supabase.from('movie_comments').insert({
+  const { error } = await supabase.from('movie_comments').insert({
     movie_id: movieId,
     user_id: user.id,
     user_name: user.user_metadata?.full_name ?? user.email,
@@ -222,6 +223,7 @@ export async function addComment(
     rating,
     parent_id: parentId,
   })
+  console.log('insert error:', error)
 }
 export async function deleteComment(commentId: string): Promise<void> {
   const supabase = createClient()
