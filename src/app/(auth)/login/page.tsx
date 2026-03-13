@@ -12,16 +12,21 @@ export default function LoginPage() {
   const supabase = createClient()
 
   async function signInWithGoogle(): Promise<void> {
-    await supabase.auth.signInWithOAuth({
+    const { data } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        skipBrowserRedirect: true,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
         },
       },
     })
+
+    if (data?.url) {
+      window.location.href = data.url
+    }
   }
 
   return (
