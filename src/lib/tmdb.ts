@@ -274,3 +274,20 @@ export async function getMovieImages(movieId: number): Promise<TMDBImage[]> {
   const data = (await res.json()) as { backdrops: TMDBImage[] }
   return data.backdrops.slice(0, 10)
 }
+
+// Рекомендації на основі фільму
+export async function getMovieRecommendations(
+  movieId: number
+): Promise<TMDBMovie[]> {
+  const params = new URLSearchParams({ language: 'uk-UA' })
+  const res = await fetch(
+    `${BASE_URL}/movie/${movieId}/recommendations?${params}`,
+    {
+      headers,
+      next: { revalidate: 3600 },
+    }
+  )
+  if (!res.ok) return []
+  const data = (await res.json()) as TMDBResponse<TMDBMovie>
+  return data.results
+}

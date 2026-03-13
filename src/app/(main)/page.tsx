@@ -6,9 +6,14 @@
 
 import { createClient } from '@/lib/supabase/server'
 import PopularMovies from '@/components/home/PopularMovies'
-import { getPopularMovies } from '@/lib/tmdb'
+import {
+  getPopularMovies,
+  getMovieRecommendations,
+  TMDBMovie,
+} from '@/lib/tmdb'
 import Link from 'next/link'
 import Image from 'next/image'
+import Recommendations from '@/components/home/Recommendations'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -16,6 +21,36 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser()
   const { results: movies } = await getPopularMovies()
+
+  const { data: favorites } = await supabase
+    .from('user_movies')
+    .select('movie_id')
+    .eq('status', 'favorite')
+    .limit(5)
+
+  const watchedIds = new Set(
+    (await supabase.from('user_movies').select('movie_id')).data?.map(
+      (m) => m.movie_id
+    ) ?? []
+  )
+
+  let recommendations: TMDBMovie[] = []
+
+  if (favorites?.length) {
+    const results = await Promise.all(
+      favorites.map((f) => getMovieRecommendations(f.movie_id))
+    )
+    const seen = new Set<number>()
+    recommendations = results
+      .flat()
+      .filter((m) => {
+        if (seen.has(m.id) || watchedIds.has(m.id)) return false
+        seen.add(m.id)
+        return true
+      })
+      .sort((a, b) => b.popularity - a.popularity)
+      .slice(0, 20)
+  }
 
   return (
     <div className="min-h-screen">
@@ -64,9 +99,7 @@ export default async function HomePage() {
       {/* Placeholder для віджетів */}
       <div className="px-5 space-y-4">
         <PopularMovies movies={movies} />
-        <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 h-40 flex items-center justify-center">
-          <p className="text-text-3 text-sm">🤖 AI Рекомендації</p>
-        </div>
+        <Recommendations movies={recommendations} />
         <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 h-40 flex items-center justify-center">
           <p className="text-text-3 text-sm">🇺🇦 Нові з озвученням</p>
         </div>
