@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { LogOut, Bell, Globe } from 'lucide-react'
 import Image from 'next/image'
+import { getGenres } from '@/lib/tmdb'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -16,11 +17,36 @@ export default async function ProfilePage() {
   if (!user) redirect('/login')
 
   // Статистика з user_movies
-  const { data: movies } = await supabase.from('user_movies').select('status')
+  const { data: movies } = await supabase
+    .from('user_movies')
+    .select('status, genre_ids')
 
   const watched = movies?.filter((m) => m.status === 'watched').length ?? 0
   const watchlist = movies?.filter((m) => m.status === 'watchlist').length ?? 0
   const favorite = movies?.filter((m) => m.status === 'favorite').length ?? 0
+
+  // Улюблені жанри з переглянутих фільмів
+  const counts: Record<number, number> = {}
+  movies
+    ?.filter((m) => m.status === 'watched')
+    .forEach((m) => {
+      const ids = m.genre_ids as number[] | null
+      ids?.forEach((id) => {
+        counts[id] = (counts[id] ?? 0) + 1
+      })
+    })
+
+  const allGenres = await getGenres()
+  const max = Math.max(...Object.values(counts), 1)
+  const favoriteGenres = allGenres
+    .filter((g) => counts[g.id] !== undefined)
+    .map((g) => ({
+      id: g.id,
+      name: g.name,
+      percent: Math.round(((counts[g.id] ?? 0) / max) * 100),
+    }))
+    .sort((a, b) => b.percent - a.percent)
+    .slice(0, 5)
 
   const name = user.user_metadata?.full_name ?? user.email
   const avatar = user.user_metadata?.avatar_url
@@ -67,6 +93,43 @@ export default async function ProfilePage() {
           <p className="text-[10px] text-text-3 mt-1">Улюблені</p>
         </div>
       </div>
+
+      {/* Улюблені жанри */}
+      {favoriteGenres.length > 0 && (
+        <div className="px-5 mb-6">
+          <h3 className="text-sm font-bold text-text-3 mb-3 uppercase tracking-wider">
+            🎭 Мої жанри
+          </h3>
+          <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 flex flex-col gap-3">
+            {favoriteGenres.map((genre) => (
+              <div key={genre.id} className="flex items-center gap-3">
+                <span className="text-xs text-text-2 w-24 flex-shrink-0">
+                  {genre.name}
+                </span>
+                <div
+                  className="flex-1 rounded-full overflow-hidden"
+                  style={{
+                    height: '6px',
+                    background: 'rgba(255,255,255,0.08)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${genre.percent}%`,
+                      height: '100%',
+                      borderRadius: '9999px',
+                      background: 'linear-gradient(90deg, #7c6af7, #e8b84b)',
+                    }}
+                  />
+                </div>
+                <span className="text-xs text-text-3 w-8 text-right">
+                  {genre.percent}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Налаштування */}
       <div className="px-5">
