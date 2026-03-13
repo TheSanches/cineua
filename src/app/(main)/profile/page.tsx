@@ -51,6 +51,10 @@ export default async function ProfilePage() {
   const name = user.user_metadata?.full_name ?? user.email
   const avatar = user.user_metadata?.avatar_url
   const firstLetter = name?.[0]?.toUpperCase() ?? '?'
+  const joinedDate = new Date(user.created_at).toLocaleDateString('uk-UA', {
+    month: 'long',
+    year: 'numeric',
+  })
 
   return (
     <div className="min-h-screen pb-10">
@@ -76,6 +80,7 @@ export default async function ProfilePage() {
         )}
         <h2 className="text-xl font-black text-text-1">{name}</h2>
         <p className="text-sm text-text-3 mt-1">{user.email}</p>
+        <p className="text-xs text-text-3 mt-1">На CineUA з {joinedDate}</p>
       </div>
 
       {/* Статистика */}
