@@ -1,4 +1,5 @@
 import BottomNav from '@/components/BottomNav'
+import InstallBanner from '@/components/ui/InstallBanner'
 
 export default async function MainLayout({
   children,
@@ -14,6 +15,7 @@ export default async function MainLayout({
       <div className="w-full max-w-[430px] bg-bg min-h-screen relative shadow-2xl">
         <main className="pb-20">{children}</main>
         <BottomNav />
+        <InstallBanner />
       </div>
     </div>
   )
