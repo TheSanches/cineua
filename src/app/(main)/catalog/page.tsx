@@ -60,7 +60,9 @@ export default async function CatalogPage({ searchParams }: PageProps) {
       </header>
 
       {/* Фільтри */}
-      <CatalogFilters genres={genres} />
+      <Suspense fallback={<div className="h-20" />}>
+        <CatalogFilters genres={genres} />
+      </Suspense>
 
       {/* Suspense — показує Spinner поки CatalogContent завантажується */}
       <Suspense fallback={<Spinner />}>
