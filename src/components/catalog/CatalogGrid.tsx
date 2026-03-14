@@ -1,9 +1,7 @@
-// Сітка фільмів у каталозі
-
 'use client'
 
 import { TMDBMovie, TMDBGenre } from '@/lib/tmdb'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import MovieCard from '@/components/ui/MovieCard'
 import { useSearchParams } from 'next/navigation'
 import { getAllUserStatuses, MovieStatus } from '@/lib/userMovies'
@@ -14,7 +12,7 @@ interface Props {
   userId: string | null
 }
 
-const CatalogGrid: React.FC<Props> = ({ movies, genres, userId }) => {
+function CatalogGridInner({ movies, genres, userId }: Props) {
   const searchParams = useSearchParams()
   const [allMovies, setAllMovies] = useState<TMDBMovie[]>(movies ?? [])
   const [page, setPage] = useState(1)
@@ -80,7 +78,6 @@ const CatalogGrid: React.FC<Props> = ({ movies, genres, userId }) => {
           />
         ))}
       </div>
-
       <div className="flex justify-center pb-6">
         <button
           onClick={loadMore}
@@ -91,6 +88,16 @@ const CatalogGrid: React.FC<Props> = ({ movies, genres, userId }) => {
         </button>
       </div>
     </div>
+  )
+}
+
+const CatalogGrid: React.FC<Props> = (props) => {
+  return (
+    <Suspense
+      fallback={<div className="p-5 text-text-3 text-sm">Завантаження...</div>}
+    >
+      <CatalogGridInner {...props} />
+    </Suspense>
   )
 }
 
