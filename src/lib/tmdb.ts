@@ -62,6 +62,7 @@ export interface TMDBMovieDetails extends TMDBMovie {
   runtime: number | null
   genres: Array<{ id: number; name: string }>
   tagline: string
+  production_countries: { iso_3166_1: string; name: string }[]
 }
 
 export interface TMDBReview {

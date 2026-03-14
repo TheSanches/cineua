@@ -77,7 +77,7 @@ export default async function MoviePage({ params }: PageProps) {
     (c) => c.job === 'Screenplay' || c.job === 'Writer'
   )
   const producer = credits.crew.find((c) => c.job === 'Producer')
-  console.log('images:', images.length, images[0])
+
   return (
     <div className="min-h-screen">
       {/* Кнопка назад */}
@@ -206,6 +206,19 @@ export default async function MoviePage({ params }: PageProps) {
                 >
                   {producer.name}
                 </Link>
+              </div>
+            )}
+            {/* Країна */}
+            {movie.production_countries?.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-text-3 w-24 flex-shrink-0">
+                  Країна
+                </span>
+                <span className="text-[11px] font-semibold text-text-4">
+                  {movie.production_countries
+                    .map((c: { name: string }) => c.name)
+                    .join(', ')}
+                </span>
               </div>
             )}
           </div>
