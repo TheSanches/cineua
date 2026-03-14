@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cineua-v4'
+const CACHE_NAME = 'cineua-v5'
 
 self.addEventListener('install', (event) => {
   self.skipWaiting()

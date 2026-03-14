@@ -41,7 +41,14 @@ export async function proxy(request: NextRequest) {
   const isProtected = PROTECTED_ROUTES.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   )
-
+  console.log(
+    'pathname:',
+    request.nextUrl.pathname,
+    'user:',
+    !!user,
+    'isProtected:',
+    isProtected
+  )
   if (!user && isProtected) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
