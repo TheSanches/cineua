@@ -8,6 +8,7 @@ import { getPopularMovies, getGenres, searchMovies } from '@/lib/tmdb'
 import CatalogGrid from '@/components/catalog/CatalogGrid'
 import CatalogFilters from '@/components/catalog/CatalogFilters'
 import Spinner from '@/components/ui/Spinner'
+import { createClient } from '@/lib/supabase/server'
 
 interface PageProps {
   searchParams: Promise<{
@@ -20,6 +21,10 @@ interface PageProps {
 async function CatalogContent({ searchParams }: PageProps) {
   const params = await searchParams
   const genres = await getGenres()
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // Якщо є пошуковий запит — шукаємо, інакше популярні
   const { results: movies } = params.query
@@ -40,7 +45,9 @@ async function CatalogContent({ searchParams }: PageProps) {
     : sorted
 
   // Замість filtered передавай sorted:
-  return <CatalogGrid movies={sorted} genres={genres} />
+  return (
+    <CatalogGrid movies={sorted} genres={genres} userId={user?.id ?? null} />
+  )
 }
 
 export default async function CatalogPage({ searchParams }: PageProps) {

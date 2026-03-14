@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { getPosterUrl } from '@/lib/tmdb'
 import Image from 'next/image'
+import MovieCardActions from '@/components/ui/MovieCardActions'
+import { MovieStatus } from '@/lib/userMovies'
 
 interface Props {
   id: number
@@ -11,7 +13,10 @@ interface Props {
   vote_average?: number
   release_date?: string
   genre?: string
+  genre_ids?: number[]
   cineua_rating?: number
+  userId?: string | null
+  initialStatuses?: MovieStatus[]
 }
 
 export default function MovieCard({
@@ -21,7 +26,10 @@ export default function MovieCard({
   vote_average,
   release_date,
   genre,
+  genre_ids,
   cineua_rating,
+  userId,
+  initialStatuses = [],
 }: Props) {
   return (
     <Link
@@ -41,20 +49,27 @@ export default function MovieCard({
             ⭐ {vote_average.toFixed(1)}
           </div>
         )}
-        {cineua_rating !== undefined && (
-          <div className="bg-black/70 text-accent-purple text-[10px] font-bold px-1.5 py-0.5 rounded-md">
-            🇺🇦 {cineua_rating.toFixed(1)}
-          </div>
-        )}
       </div>
       <div className="p-3 flex flex-col flex-1 justify-between min-h-[80px]">
         <h3 className="text-sm font-bold text-text-1 line-clamp-2 leading-tight text-center">
           {title}
         </h3>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-1">
           <p className="text-text-3 text-[10px]">{release_date?.slice(0, 4)}</p>
           {genre && <p className="text-text-3 text-[10px]">{genre}</p>}
         </div>
+        {userId !== undefined && (
+          <MovieCardActions
+            movieId={id}
+            movieTitle={title}
+            posterPath={poster_path}
+            voteAverage={vote_average}
+            releaseDate={release_date}
+            genreIds={genre_ids}
+            userId={userId ?? null}
+            initialStatuses={initialStatuses ?? []}
+          />
+        )}
       </div>
     </Link>
   )

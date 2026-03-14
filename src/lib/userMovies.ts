@@ -38,16 +38,19 @@ export async function addMovie(
   } = await supabase.auth.getUser()
   if (!user) throw new Error('Не авторизований')
 
-  const { error } = await supabase.from('user_movies').upsert({
-    user_id: user.id,
-    movie_id: movieId,
-    movie_title: movieTitle,
-    poster_path: posterPath,
-    status,
-    vote_average: voteAverage,
-    release_date: releaseDate,
-    genre_ids: genreIds,
-  })
+  const { error } = await supabase.from('user_movies').upsert(
+    {
+      user_id: user.id,
+      movie_id: movieId,
+      movie_title: movieTitle,
+      poster_path: posterPath,
+      status,
+      vote_average: voteAverage,
+      release_date: releaseDate,
+      genre_ids: genreIds,
+    },
+    { onConflict: 'user_id,movie_id,status' }
+  )
   if (error) throw error
 }
 
@@ -76,10 +79,16 @@ export async function getMovieStatuses(
   movieId: number
 ): Promise<MovieStatus[]> {
   const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return [] // ← додай
+
   const { data, error } = await supabase
     .from('user_movies')
     .select('status')
     .eq('movie_id', movieId)
+    .eq('user_id', user.id) // ← додай фільтр
 
   if (error) throw error
   return (data ?? []).map((r) => r.status as MovieStatus)
@@ -391,4 +400,31 @@ export async function getCommunityRecommendations() {
     .limit(30)
 
   return data || []
+}
+
+export async function getAllUserStatuses(): Promise<
+  Record<number, MovieStatus[]>
+> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return {}
+
+  const { data } = await supabase
+    .from('user_movies')
+    .select('movie_id, status')
+    .eq('user_id', user.id)
+
+  if (!data) return {}
+
+  return data.reduce(
+    (acc, row) => {
+      const key = row.movie_id as number
+      if (!acc[key]) acc[key] = []
+      acc[key]!.push(row.status as MovieStatus)
+      return acc
+    },
+    {} as Record<number, MovieStatus[]>
+  )
 }
