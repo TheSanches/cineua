@@ -196,6 +196,10 @@ export default function MovieComments({
   const replies = comments.filter((c) => !!c.parent_id)
 
   async function handleSubmit() {
+    if (!currentUserId) {
+      window.location.href = '/login'
+      return
+    }
     if (!text.trim() && !rating) return
     setLoading(true)
     try {
@@ -264,6 +268,10 @@ export default function MovieComments({
   }
 
   async function handleLike(id: string) {
+    if (!currentUserId) {
+      window.location.href = '/login'
+      return
+    }
     const liked = await toggleCommentLike(id)
     setComments((prev) =>
       prev.map((c) =>
@@ -330,8 +338,14 @@ export default function MovieComments({
           </button>
         </div>
       ) : (
-        <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 mb-5 text-center">
-          <p className="text-sm text-text-3">Увійдіть щоб залишити коментар</p>
+        <div
+          onClick={() => (window.location.href = '/login')}
+          className="bg-surface-1 border border-white/7 rounded-2xl p-4 mb-5 text-center cursor-pointer active:scale-95 transition-all"
+        >
+          <p className="text-sm text-text-3">
+            💬 Увійдіть щоб залишити коментар
+          </p>
+          <p className="text-xs text-accent-purple mt-1 font-bold">Увійти →</p>
         </div>
       )}
 

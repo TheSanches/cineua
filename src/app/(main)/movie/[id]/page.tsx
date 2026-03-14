@@ -228,6 +228,7 @@ export default async function MoviePage({ params }: PageProps) {
           movieId={movie.id}
           initialVoted={userVoted}
           initialCount={votesCount}
+          userId={user?.id ?? null}
         />
         {/* Дії */}
         <MovieActions
@@ -237,6 +238,7 @@ export default async function MoviePage({ params }: PageProps) {
           voteAverage={movie.vote_average}
           releaseDate={movie.release_date}
           genreIds={movie.genres.map((g) => g.id)}
+          userId={user?.id ?? null}
         />
         {/* Рекомендувати */}
         <RecommendButton

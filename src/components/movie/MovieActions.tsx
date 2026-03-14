@@ -18,6 +18,7 @@ interface Props {
   voteAverage?: number
   releaseDate?: string
   genreIds?: number[]
+  userId?: string | null
 }
 
 interface ActionButton {
@@ -55,6 +56,7 @@ export default function MovieActions({
   voteAverage,
   releaseDate,
   genreIds,
+  userId,
 }: Props) {
   const [activeStatuses, setActiveStatuses] = useState<MovieStatus[]>([])
   const [loading, setLoading] = useState<MovieStatus | null>(null)
@@ -66,6 +68,10 @@ export default function MovieActions({
   }, [movieId])
 
   async function toggle(status: MovieStatus) {
+    if (!userId) {
+      window.location.href = '/login'
+      return
+    }
     setLoading(status)
     try {
       if (activeStatuses.includes(status)) {

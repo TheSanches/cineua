@@ -43,9 +43,13 @@ export default function RecommendButton({
     })
   }, [movieId, user])
 
-  if (!user || initialLoading) return null
+  if (initialLoading) return null
 
   async function handleSubmit() {
+    if (!user) {
+      window.location.href = '/login'
+      return
+    }
     setLoading(true)
     try {
       await addRecommendation(movieId, movieTitle, posterPath, comment)
@@ -88,10 +92,12 @@ export default function RecommendButton({
     <div className="flex gap-3 mt-5">
       {!showForm ? (
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() =>
+            user ? setShowForm(true) : (window.location.href = '/login')
+          }
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold
-            bg-white/5 text-white/60 border border-white/10
-            active:scale-95 transition-all"
+      bg-white/5 text-white/60 border border-white/10
+      active:scale-95 transition-all"
         >
           <ThumbsUp size={15} />
           Рекомендую іншим

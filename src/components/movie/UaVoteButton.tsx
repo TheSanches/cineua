@@ -10,12 +10,14 @@ interface Props {
   movieId: number
   initialVoted: boolean
   initialCount: number
+  userId: string | null
 }
 
 export default function UaVoteButton({
   movieId,
   initialVoted,
   initialCount,
+  userId,
 }: Props) {
   const [voted, setVoted] = useState(initialVoted)
   const [count, setCount] = useState(initialCount)
@@ -32,6 +34,10 @@ export default function UaVoteButton({
   }, [movieId])
 
   async function handleClick() {
+    if (!userId) {
+      window.location.href = '/login'
+      return
+    }
     setLoading(true)
     try {
       if (voted) {
