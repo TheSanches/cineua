@@ -309,3 +309,26 @@ export async function getUkrainianMovies(
   if (!res.ok) throw new Error(`TMDB ukrainian movies error: ${res.status}`)
   return res.json() as Promise<TMDBResponse<TMDBMovie>>
 }
+
+export async function getWatchProviders(movieId: number) {
+  const res = await fetch(`${BASE_URL}/movie/${movieId}/watch/providers`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
+  const data = await res.json()
+  const results = data.results
+
+  const isUa = !!results?.UA
+  const ua = results?.UA ?? results?.PL ?? results?.DE ?? results?.GB ?? null
+
+  return {
+    ua,
+    isUa,
+    justWatchLink:
+      results?.UA?.link ??
+      results?.PL?.link ??
+      results?.DE?.link ??
+      results?.GB?.link ??
+      null,
+  }
+}

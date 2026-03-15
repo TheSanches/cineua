@@ -1,5 +1,3 @@
-// Компонент з кнопками для додавання фільму до різних списків (хочу, бачив, люблю)
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -10,6 +8,7 @@ import {
   getMovieStatuses,
   MovieStatus,
 } from '@/lib/userMovies'
+import WatchProvidersModal from '@/components/movie/WatchProvidersModal'
 
 interface Props {
   movieId: number
@@ -60,6 +59,7 @@ export default function MovieActions({
 }: Props) {
   const [activeStatuses, setActiveStatuses] = useState<MovieStatus[]>([])
   const [loading, setLoading] = useState<MovieStatus | null>(null)
+  const [showProviders, setShowProviders] = useState(false) // ← додав
 
   useEffect(() => {
     getMovieStatuses(movieId)
@@ -97,33 +97,44 @@ export default function MovieActions({
   }
 
   return (
-    <div className="flex gap-3 mt-5">
-      {/* Де дивитись */}
-      <button className="flex-1 py-3 bg-accent-gold text-black font-black text-sm rounded-2xl">
-        Де дивитись
-      </button>
+    <>
+      <div className="flex gap-3 mt-5">
+        <button
+          onClick={() => setShowProviders(true)}
+          className="flex-1 py-3 bg-accent-gold text-black font-black text-sm rounded-2xl active:scale-95 transition-all"
+        >
+          Де дивитись
+        </button>
 
-      {/* Дії */}
-      {ACTIONS.map((action) => {
-        const isActive = activeStatuses.includes(action.status)
-        const isLoading = loading === action.status
+        {ACTIONS.map((action) => {
+          const isActive = activeStatuses.includes(action.status)
+          const isLoading = loading === action.status
 
-        return (
-          <button
-            key={action.status}
-            onClick={() => toggle(action.status)}
-            disabled={isLoading}
-            className={`w-12 h-12 bg-surface-2 border rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all ${
-              isActive
-                ? `border-current ${action.activeColor}`
-                : 'border-white/7 text-text-3'
-            }`}
-          >
-            {action.icon}
-            <span className="text-[8px] font-bold">{action.label}</span>
-          </button>
-        )
-      })}
-    </div>
+          return (
+            <button
+              key={action.status}
+              onClick={() => toggle(action.status)}
+              disabled={isLoading}
+              className={`w-12 h-12 bg-surface-2 border rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all ${
+                isActive
+                  ? `border-current ${action.activeColor}`
+                  : 'border-white/7 text-text-3'
+              }`}
+            >
+              {action.icon}
+              <span className="text-[8px] font-bold">{action.label}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {showProviders && (
+        <WatchProvidersModal
+          movieId={movieId}
+          movieTitle={movieTitle}
+          onClose={() => setShowProviders(false)}
+        />
+      )}
+    </>
   )
 }
