@@ -28,7 +28,7 @@ export default function MovieSlider({
   if (!movies?.length) return null
 
   return (
-    <div className="mt-6 relative">
+    <div className="mt-3 relative">
       {title && (
         <div className="flex items-center gap-2 mb-3 px-5">
           {icon}

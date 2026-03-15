@@ -5,9 +5,10 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { LogOut, Bell, Globe } from 'lucide-react'
+import { LogOut, Bell, Globe, Film, Heart, Settings } from 'lucide-react'
 import Image from 'next/image'
 import { getGenres } from '@/lib/tmdb'
+import FavoriteActorsSlider from '@/components/profile/FavoriteActorsSlider'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -38,6 +39,12 @@ export default async function ProfilePage() {
 
   const allGenres = await getGenres()
   const max = Math.max(...Object.values(counts), 1)
+  const { data: favoriteActors } = await supabase
+    .from('favorite_actors')
+    .select('actor_id, actor_name, profile_path, created_at')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+
   const favoriteGenres = allGenres
     .filter((g) => counts[g.id] !== undefined)
     .map((g) => ({
@@ -102,9 +109,11 @@ export default async function ProfilePage() {
       {/* Улюблені жанри */}
       {favoriteGenres.length > 0 && (
         <div className="px-5 mb-6">
-          <h3 className="text-sm font-bold text-text-3 mb-3 uppercase tracking-wider">
-            🎭 Мої жанри
-          </h3>
+          <div className="flex items-center gap-2 mb-2">
+            <Film size={16} className="text-accent-blue" />
+            <h2 className="text-base font-black text-accent-gold">Мої жанри</h2>
+          </div>
+
           <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 flex flex-col gap-3">
             {favoriteGenres.map((genre) => (
               <div key={genre.id} className="flex items-center gap-3">
@@ -136,11 +145,30 @@ export default async function ProfilePage() {
         </div>
       )}
 
+      {/* Улюблені актори */}
+      {favoriteActors && favoriteActors.length > 0 && (
+        <div className="px-5 mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Heart size={16} className="text-accent-blue" />
+            <h2 className="text-base font-black text-accent-gold">
+              Улюблені актори
+            </h2>
+          </div>
+          <div className="bg-surface-1 border border-white/7 rounded-2xl p-4">
+            <FavoriteActorsSlider actors={favoriteActors} />
+          </div>
+        </div>
+      )}
+
       {/* Налаштування */}
       <div className="px-5">
-        <h3 className="text-sm font-bold text-text-3 mb-3 uppercase tracking-wider">
-          Налаштування
-        </h3>
+        <div className="flex items-center gap-2 mb-2">
+          <Settings size={16} className="text-accent-blue" />
+          <h2 className="text-base font-black text-accent-gold">
+            Налаштування
+          </h2>
+        </div>
+
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3 px-4 py-3 bg-surface-1 border border-white/7 rounded-2xl">
             <Bell size={18} className="text-text-2" />

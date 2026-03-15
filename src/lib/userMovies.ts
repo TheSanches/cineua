@@ -428,3 +428,75 @@ export async function getAllUserStatuses(): Promise<
     {} as Record<number, MovieStatus[]>
   )
 }
+
+// ===== FAVORITE ACTORS =====
+
+export async function isFavoriteActor(actorId: number): Promise<boolean> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return false
+
+  const { data } = await supabase
+    .from('favorite_actors')
+    .select('actor_id')
+    .eq('user_id', user.id)
+    .eq('actor_id', actorId)
+    .maybeSingle()
+
+  return !!data
+}
+
+export async function addFavoriteActor(actor: {
+  actor_id: number
+  actor_name: string
+  profile_path: string | null
+}): Promise<void> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return
+
+  await supabase.from('favorite_actors').insert({
+    user_id: user.id,
+    ...actor,
+  })
+}
+
+export async function removeFavoriteActor(actorId: number): Promise<void> {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return
+
+  await supabase
+    .from('favorite_actors')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('actor_id', actorId)
+}
+
+export async function getFavoriteActors(userId?: string): Promise<
+  {
+    actor_id: number
+    actor_name: string
+    profile_path: string | null
+    created_at: string
+  }[]
+> {
+  const supabase = createClient()
+
+  const uid = userId ?? (await supabase.auth.getUser()).data.user?.id
+  if (!uid) return []
+
+  const { data } = await supabase
+    .from('favorite_actors')
+    .select('actor_id, actor_name, profile_path, created_at')
+    .eq('user_id', uid)
+    .order('created_at', { ascending: false })
+
+  return data ?? []
+}

@@ -6,10 +6,12 @@ export default async function UkrainianMovies() {
   if (!results?.length) return null
 
   return (
-    <MovieSlider
-      movies={results}
-      title="Українське кіно"
-      icon={<span>🇺🇦</span>}
-    />
+    <div className="bg-surface-1 border border-white/7 rounded-2xl ">
+      <MovieSlider
+        movies={results}
+        title="Українське кіно"
+        icon={<span className="text-accent-blue">🇺🇦</span>}
+      />
+    </div>
   )
 }

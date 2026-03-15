@@ -8,6 +8,7 @@ import BackButton from '@/components/ui/BackButton'
 import PersonMovies from '@/components/person/PersonMovies'
 import { BookOpen } from 'lucide-react'
 import Image from 'next/image'
+import FavoriteActorButton from '@/components/person/FavoriteActorButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -63,6 +64,7 @@ export default async function PersonPage({ params }: PageProps) {
               <p className="text-[10px] text-text-3">Рік народження</p>
             </div>
           )}
+
           {person.place_of_birth && (
             <div className="text-center">
               <p className="text-sm font-bold text-text-1 line-clamp-1">
@@ -92,6 +94,13 @@ export default async function PersonPage({ params }: PageProps) {
           </p>
         </div>
       )}
+      <div className="flex items-center justify-center mb-5">
+        <FavoriteActorButton
+          actorId={Number(id)}
+          actorName={person.name}
+          profilePath={person.profile_path ?? null}
+        />
+      </div>
 
       {/* Фільмографія */}
       <PersonMovies movies={movies} genres={genres} />

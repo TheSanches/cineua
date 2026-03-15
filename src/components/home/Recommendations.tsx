@@ -11,9 +11,9 @@ export default function Recommendations({ movies }: Props) {
 
   return (
     <div className="bg-surface-1 border border-white/7 rounded-2xl py-4">
-      <div className="flex items-center gap-2 px-4 mb-3">
-        <Sparkles size={16} className="text-accent-gold" />
-        <h2 className="text-base font-black text-text-1">
+      <div className="flex items-center gap-2 px-4">
+        <Sparkles size={16} className="text-accent-blue" />
+        <h2 className="text-base font-black text-accent-gold">
           Рекомендації для вас
         </h2>
       </div>

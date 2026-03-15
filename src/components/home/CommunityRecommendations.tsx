@@ -42,12 +42,13 @@ export default function CommunityRecommendations() {
 
   return (
     <div className="bg-surface-1 border border-white/7 rounded-2xl py-4">
-      <div className="flex items-center justify-between px-5 mb-3">
-        <h2 className="text-base font-extrabold flex items-center gap-2">
-          <ThumbsUp size={16} className="text-amber-400" />
+      <div className="flex items-center gap-2 mb-2 px-4">
+        <ThumbsUp size={16} className="text-accent-blue" />
+        <h2 className="text-base font-black text-accent-gold">
           Спільнота радить
         </h2>
       </div>
+
       <div className="overflow-hidden">
         <Swiper
           modules={[FreeMode]}
