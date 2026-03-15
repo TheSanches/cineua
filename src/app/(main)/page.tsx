@@ -15,6 +15,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Recommendations from '@/components/home/Recommendations'
 import CommunityRecommendations from '@/components/home/CommunityRecommendations'
+import UkrainianMovies from '@/components/home/UkrainianMovies'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -112,6 +113,7 @@ export default async function HomePage() {
       {/* Placeholder для віджетів */}
       <div className="px-5 space-y-4">
         <PopularMovies movies={movies} />
+        <UkrainianMovies />
         <Recommendations movies={recommendations} />
         <CommunityRecommendations />
         <div className="bg-surface-1 border border-white/7 rounded-2xl p-4 h-40 flex items-center justify-center">

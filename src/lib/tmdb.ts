@@ -292,3 +292,20 @@ export async function getMovieRecommendations(
   const data = (await res.json()) as TMDBResponse<TMDBMovie>
   return data.results
 }
+
+export async function getUkrainianMovies(
+  page = 1
+): Promise<TMDBResponse<TMDBMovie>> {
+  const params = new URLSearchParams({
+    language: 'uk-UA',
+    page: String(page),
+    with_origin_country: 'UA',
+    sort_by: 'popularity.desc',
+  })
+  const res = await fetch(`${BASE_URL}/discover/movie?${params}`, {
+    headers,
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error(`TMDB ukrainian movies error: ${res.status}`)
+  return res.json() as Promise<TMDBResponse<TMDBMovie>>
+}
