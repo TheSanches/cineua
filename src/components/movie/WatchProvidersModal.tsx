@@ -46,17 +46,22 @@ const UA_FALLBACKS = [
   {
     name: 'Megogo',
     url: (title: string) =>
-      `https://megogo.net/ua/search?q=${encodeURIComponent(title)}`,
+      `https://megogo.net/ua/search-extended?q=${encodeURIComponent(title)}`,
   },
   {
     name: 'Sweet.tv',
     url: (title: string) =>
-      `https://sweet.tv/uk/search?query=${encodeURIComponent(title)}`,
+      `https://sweet.tv/search?q=${encodeURIComponent(title)}`,
   },
   {
     name: 'Kyivstar TV',
     url: (title: string) =>
       `https://tv.kyivstar.ua/ua/search?query=${encodeURIComponent(title)}`,
+  },
+  {
+    name: 'Takflix',
+    url: (title: string) =>
+      `https://takflix.com/uk/search?query=${encodeURIComponent(title)}`,
   },
 ]
 
@@ -142,7 +147,13 @@ export default function WatchProvidersModal({
         className="fixed inset-0 bg-black/80 z-[60] backdrop-blur-md"
         onClick={onClose}
       />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-40px)] max-w-[400px] bg-[#0A0A0F] border border-white/10 rounded-[32px] z-[70] p-6 max-h-[85vh] overflow-y-auto shadow-2xl">
+      <div
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-40px)] max-w-[400px] bg-[#0A0A0F] border border-white/10 rounded-[32px] z-[70] p-6 max-h-[85vh] overflow-y-auto scrollbar-hide shadow-2xl"
+        style={{
+          scrollbarWidth: 'none', // Firefox
+          msOverflowStyle: 'none', // IE/Edge
+        }}
+      >
         <div className="flex items-start justify-between mb-6">
           <div>
             <h3 className="text-xl font-black text-white tracking-tight">
